@@ -1,0 +1,35 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import MemberCard from './MemberCard.astro';
+
+interface Props { roster: CollectionEntry<'team'>; terms: { term: string; label: string; href: string }[] }
+const { roster, terms } = Astro.props;
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+---
+<div class="border-b border-mist-deep/70 bg-paper/95 backdrop-blur lg:sticky lg:top-[4.5rem] lg:z-30">
+  <div class="wrap flex flex-wrap items-center justify-between gap-3 py-3">
+    <nav aria-label="Portfolios" class="-mx-1 flex gap-1.5 overflow-x-auto px-1 py-1 [scrollbar-width:none]">
+      {roster.data.portfolios.map((p) => <a href={`#${slug(p.name)}`} class="chip shrink-0 hover:border-harbour">{p.name}</a>)}
+    </nav>
+    {terms.length > 1 && (
+      <nav aria-label="Year" class="flex gap-1.5">
+        {terms.map((t) => (
+          <a href={t.href} class="chip" aria-pressed={t.term === roster.data.term ? 'true' : 'false'} aria-current={t.term === roster.data.term ? 'page' : undefined}>{t.label}</a>
+        ))}
+      </nav>
+    )}
+  </div>
+</div>
+
+<div class="wrap divide-y divide-mist-deep py-6 md:py-10">
+  {roster.data.portfolios.map((p) => (
+    <section id={slug(p.name)} class="grid gap-6 py-10 lg:grid-cols-12 lg:gap-10" aria-labelledby={`${slug(p.name)}-h`}>
+      <div class="lg:col-span-3">
+        <h2 id={`${slug(p.name)}-h`} class="heading text-2xl lg:sticky lg:top-36 lg:text-[1.75rem]">{p.name}</h2>
+      </div>
+      <ul class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:col-span-9 lg:grid-cols-4">
+        {p.members.map((m) => <MemberCard member={m} />)}
+      </ul>
+    </section>
+  ))}
+</div>

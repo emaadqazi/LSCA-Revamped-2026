@@ -1,0 +1,124 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import EventRow from '../../components/EventRow.astro';
+import MonthGrid from '../../components/MonthGrid.astro';
+import { getEvents } from '../../lib/content';
+import { groupByMonth } from '../../lib/dates';
+import { SITE } from '../../lib/site';
+
+const { upcoming, past } = await getEvents();
+const groups = groupByMonth(upcoming, (e) => e.data.start);
+const types = [...new Set(upcoming.map((e) => e.data.type))].sort();
+const webcal = `webcal://${new URL(SITE.url).host}/events.ics`;
+---
+<Base title="Events" description="Upcoming LSCA events at Wilfrid Laurier University: speaker panels, case competitions, workshops and socials.">
+  <PageHeader title="Events" intro="Everything we have planned this term and beyond. Add one event to your calendar, or subscribe once and new events show up automatically.">
+    <div class="flex flex-wrap gap-2 md:col-span-12">
+      <a href={webcal} class="btn btn-primary !py-2 text-sm">Subscribe to our calendar</a>
+      <a href="/events.ics" class="btn btn-ghost !py-2 text-sm" download>Download .ics</a>
+    </div>
+  </PageHeader>
+
+  <section class="py-12 md:py-16" aria-labelledby="up-h">
+    <div class="wrap">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <h2 id="up-h" class="heading text-[clamp(1.6rem,3vw,2.2rem)]">Upcoming</h2>
+        {/* The month grid is too cramped on phones, so the toggle appears from tablet width up. */}
+        {upcoming.length > 0 && (
+          <div class="js-only hidden flex-wrap items-center gap-2 md:flex" hidden>
+            <div class="flex rounded-full border border-mist-deep p-1" role="group" aria-label="View">
+              <button type="button" class="rounded-full px-4 py-1.5 text-sm font-semibold aria-pressed:bg-harbour aria-pressed:text-paper" aria-pressed="true" data-view="list">List</button>
+              <button type="button" class="rounded-full px-4 py-1.5 text-sm font-semibold aria-pressed:bg-harbour aria-pressed:text-paper" aria-pressed="false" data-view="month">Month</button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {types.length > 1 && (
+        <div class="js-only mt-5 flex flex-wrap gap-2" role="group" aria-label="Filter by type" hidden>
+          <button type="button" class="chip" aria-pressed="true" data-filter="all">All types</button>
+          {types.map((t) => <button type="button" class="chip" aria-pressed="false" data-filter={t}>{t}</button>)}
+        </div>
+      )}
+
+      {upcoming.length === 0 ? (
+        <p class="mt-6 max-w-xl rounded-[var(--radius-link)] border border-dashed border-mist-deep p-6 text-harbour/80">
+          Nothing is scheduled yet. New events are announced on <a class="link font-semibold" href={SITE.social.instagram} target="_blank" rel="noopener">Instagram</a>, or subscribe above to get them in your calendar.
+        </p>
+      ) : (
+        <>
+          <div data-panel="list" class="mt-8 space-y-10">
+            {groups.map((g) => (
+              <section aria-label={g.label}>
+                <h3 class="data mb-3 text-lg text-harbour/70" data-month-heading>{g.label}</h3>
+                <div class="grid gap-4">{g.items.map((e) => <EventRow event={e} />)}</div>
+              </section>
+            ))}
+            <p class="hidden text-harbour/75" data-empty-filter>No upcoming events of this type.</p>
+          </div>
+          <div data-panel="month" class="mt-8" hidden>
+            <MonthGrid events={upcoming} />
+          </div>
+        </>
+      )}
+    </div>
+  </section>
+
+  {past.length > 0 && (
+    <section class="border-t border-mist-deep/70 bg-mist py-12 md:py-16" aria-labelledby="past-h">
+      <div class="wrap">
+        <details class="group" open={upcoming.length === 0}>
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+            <h2 id="past-h" class="heading text-[clamp(1.6rem,3vw,2.2rem)]">Past events <span class="text-harbour/50">({past.length})</span></h2>
+            <span class="chip group-open:rotate-180 transition-transform !h-10 !w-10 justify-center !p-0" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 6 5 5 5-5" /></svg>
+            </span>
+          </summary>
+          <div class="mt-8 grid gap-3">{past.map((e) => <EventRow event={e} tone="muted" />)}</div>
+        </details>
+      </div>
+    </section>
+  )}
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.js-only').forEach((el) => (el.hidden = false));
+
+  const viewBtns = document.querySelectorAll<HTMLButtonElement>('[data-view]');
+  const panels = document.querySelectorAll<HTMLElement>('[data-panel]');
+  const setView = (v: string) => {
+    viewBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
+    panels.forEach((p) => (p.hidden = p.dataset.panel !== v));
+    try { localStorage.setItem('lsca-events-view', v); } catch {}
+  };
+  viewBtns.forEach((b) => b.addEventListener('click', () => setView(b.dataset.view!)));
+  const wide = matchMedia('(min-width: 768px)');
+  try {
+    const saved = localStorage.getItem('lsca-events-view');
+    if (saved && wide.matches) setView(saved);
+  } catch {}
+  wide.addEventListener('change', (m) => {
+    if (!m.matches) panels.forEach((p) => (p.hidden = p.dataset.panel !== 'list'));
+    else setView(document.querySelector('[data-view][aria-pressed="true"]')?.getAttribute('data-view') ?? 'list');
+  });
+
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  filterBtns.forEach((b) =>
+    b.addEventListener('click', () => {
+      const f = b.dataset.filter!;
+      filterBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      document.querySelectorAll<HTMLElement>('[data-panel] [data-event-type]').forEach((el) => {
+        el.hidden = f !== 'all' && el.dataset.eventType !== f;
+      });
+      // Hide month headings that have no visible events left.
+      let any = false;
+      document.querySelectorAll<HTMLElement>('[data-panel="list"] > section').forEach((s) => {
+        const visible = [...s.querySelectorAll<HTMLElement>('[data-event-type]')].some((el) => !el.hidden);
+        s.hidden = !visible;
+        any ||= visible;
+      });
+      document.querySelector('[data-empty-filter]')?.classList.toggle('hidden', any);
+    }),
+  );
+</script>

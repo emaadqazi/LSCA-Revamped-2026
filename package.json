@@ -1,0 +1,12 @@
+{
+  "name": "lsca-website-designs",
+  "private": true,
+  "type": "module",
+  "workspaces": ["designs/*"],
+  "scripts": {
+    "dev": "node scripts/dev-all.mjs",
+    "dev:manifest": "npm run dev -w designs/manifest -- --port 4321",
+    "dev:network": "npm run dev -w designs/network -- --port 4322",
+    "build": "npm run build --workspaces"
+  }
+}

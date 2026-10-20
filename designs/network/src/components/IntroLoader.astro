@@ -1,0 +1,205 @@
+---
+// Logo intro shown once per visit before the home page.
+// The two chain links draw in as the page loads, swing together into the LSCA mark,
+// then the screen wipes away while the mark flies into the header.
+//
+// Shows only when `html.intro` is set. The inline script in index.astro's head slot sets it
+// before first paint (first visit this session, motion allowed). Without it, nothing renders.
+
+// Stadium outline centred on 0,0 (104 × 224, fully rounded ends), drawn from the left edge.
+const LINK = 'M -52 60 L -52 -60 A 52 52 0 0 1 52 -60 L 52 60 A 52 52 0 0 1 -52 60 Z';
+---
+<div class="intro-loader" aria-hidden="true" data-intro>
+  <div class="intro-bg"></div>
+  <div class="intro-stage">
+    <svg viewBox="0 0 400 400" class="intro-mark" data-intro-mark>
+      <g fill="none" stroke-width="28" stroke-linecap="round">
+        <g data-link="light">
+          <path d={LINK} class="ghost" />
+          <path d={LINK} pathLength="100" class="ink" stroke="#0a9cc0" />
+        </g>
+        <g data-link="dark">
+          <path d={LINK} class="ghost" />
+          <path d={LINK} pathLength="100" class="ink" stroke="#0b4558" />
+        </g>
+        <!-- The light link passes over the dark one here, which is what makes them read as interlocked. -->
+        <clipPath id="intro-over"><rect x="250" y="135" width="65" height="65" /></clipPath>
+        <g clip-path="url(#intro-over)" class="over" data-over>
+          <path d={LINK} stroke="#0a9cc0" transform="translate(212 152) rotate(45)" />
+        </g>
+      </g>
+    </svg>
+    <p class="intro-word" data-intro-word>
+      {'Laurier Supply Chain Association'.split(' ').map((w, i) => <span style={`--i:${i}`}>{w}</span>)}
+    </p>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-intro]');
+  const html = document.documentElement;
+
+  if (root && html.classList.contains('intro')) run(root);
+
+  function run(root: HTMLElement) {
+    const mark = root.querySelector<SVGSVGElement>('[data-intro-mark]')!;
+    const links = {
+      light: root.querySelector<SVGGElement>('[data-link="light"]')!,
+      dark: root.querySelector<SVGGElement>('[data-link="dark"]')!,
+    };
+    const inks = [...root.querySelectorAll<SVGPathElement>('.ink')];
+    const over = root.querySelector<SVGGElement>('[data-over]')!;
+    const word = root.querySelector<HTMLElement>('[data-intro-word]')!;
+
+    // Poses: apart and upright while loading, then the logo's interlocked 45° layout.
+    const from = { light: { x: 128, y: 200, r: 0, s: 0.78 }, dark: { x: 272, y: 200, r: 0, s: 0.78 } };
+    const to = { light: { x: 212, y: 152, r: 45, s: 1 }, dark: { x: 188, y: 248, r: 45, s: 1 } };
+    type Pose = typeof from.light;
+
+    const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const clamp = (t: number) => Math.min(1, Math.max(0, t));
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+    const place = (g: SVGGElement, a: Pose, b: Pose, t: number) =>
+      g.setAttribute(
+        'transform',
+        `translate(${lerp(a.x, b.x, t)} ${lerp(a.y, b.y, t)}) rotate(${lerp(a.r, b.r, t)}) scale(${lerp(a.s, b.s, t)})`,
+      );
+    place(links.light, from.light, to.light, 0);
+    place(links.dark, from.dark, to.dark, 0);
+
+    // Progress follows the real page load, with a minimum so the drawing is readable
+    // and a cap so a slow image never holds anyone hostage.
+    let loaded = document.readyState === 'complete';
+    addEventListener('load', () => (loaded = true), { once: true });
+    const t0 = performance.now();
+    const MIN_DRAW = 1500;
+    const MAX_WAIT = 4000;
+    let drawn = 0;
+    let morphStart = 0;
+    let skipped = false;
+
+    const skip = () => (skipped = true);
+    root.addEventListener('pointerdown', skip);
+    addEventListener('keydown', skip, { once: true });
+
+    function tick(now: number) {
+      const el = now - t0;
+      const ready = loaded || el > MAX_WAIT;
+      if (skipped) return finish();
+
+      // Phase 1: draw both outlines. Hold at 85% until the page has actually loaded.
+      if (!morphStart) {
+        const target = Math.min(el / MIN_DRAW, ready ? 1 : 0.85);
+        drawn += (target - drawn) * 0.12;
+        if (target === 1 && drawn > 0.995) drawn = 1;
+        inks[0].style.strokeDashoffset = String(100 - clamp(drawn / 0.65) * 100);
+        inks[1].style.strokeDashoffset = String(100 - clamp((drawn - 0.35) / 0.65) * 100);
+        if (drawn === 1) morphStart = now;
+        return requestAnimationFrame(tick);
+      }
+
+      // Phase 2: swing together and interlock.
+      const m = clamp((now - morphStart) / 850);
+      const e = ease(m);
+      place(links.light, from.light, to.light, e);
+      place(links.dark, from.dark, to.dark, e);
+      over.style.opacity = String(clamp((m - 0.85) / 0.15));
+      if (m > 0.55) word.classList.add('is-in');
+      if (m < 1) return requestAnimationFrame(tick);
+
+      // Phase 3: hold briefly so the mark and name register, then leave.
+      setTimeout(finish, 650);
+    }
+
+    let finished = false;
+    function finish() {
+      if (finished) return;
+      finished = true;
+      // Skipping mid-draw jumps straight to the finished logo.
+      inks.forEach((p) => (p.style.strokeDashoffset = '0'));
+      place(links.light, from.light, to.light, 1);
+      place(links.dark, from.dark, to.dark, 1);
+      over.style.opacity = '1';
+
+      // Fly the mark into the header logo's position.
+      const target = document.querySelector<SVGSVGElement>('header .link-mark');
+      const a = mark.getBoundingClientRect();
+      const b = target?.getBoundingClientRect();
+      if (target && b && b.width) {
+        target.style.visibility = 'hidden';
+        const dx = b.left + b.width / 2 - (a.left + a.width / 2);
+        const dy = b.top + b.height / 2 - (a.top + a.height / 2);
+        mark.animate([{ transform: 'none' }, { transform: `translate(${dx}px, ${dy}px) scale(${b.width / a.width})` }], {
+          duration: 900,
+          easing: 'cubic-bezier(.7,0,.2,1)',
+          fill: 'forwards',
+        });
+      }
+      word.classList.add('is-out');
+      root.classList.add('is-leaving');
+      html.classList.add('intro-leaving');
+
+      // Let the hero begin as the curtain lifts.
+      setTimeout(() => dispatchEvent(new Event('lsca:intro-done')), 350);
+      setTimeout(() => {
+        if (target) target.style.visibility = '';
+        html.classList.remove('intro', 'intro-leaving');
+        root.remove();
+        try { sessionStorage.setItem('lsca-intro', '1'); } catch {}
+      }, 950);
+    }
+
+    requestAnimationFrame(tick);
+  }
+</script>
+
+<style>
+  .intro-loader { display: none; }
+  :global(html.intro) .intro-loader { display: block; }
+  :global(html.intro:not(.intro-leaving)) { overflow: hidden; }
+
+  .intro-loader { position: fixed; inset: 0; z-index: 100; cursor: pointer; }
+  .intro-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--color-mist);
+    transition: clip-path 900ms cubic-bezier(.7, 0, .2, 1);
+    clip-path: inset(0 0 0 0);
+  }
+  .is-leaving .intro-bg { clip-path: inset(0 0 100% 0); }
+  .is-leaving { pointer-events: none; }
+
+  .intro-stage {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.5rem;
+  }
+  .intro-mark { width: min(46vw, 15rem); height: auto; overflow: visible; }
+  .ghost { stroke: var(--color-harbour); opacity: 0.1; }
+  .ink { stroke-dasharray: 100; stroke-dashoffset: 100; }
+  .over { opacity: 0; }
+
+  .intro-word {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 0.4em;
+    font-stretch: 112%;
+    font-weight: 700;
+    font-size: clamp(1rem, 2.4vw, 1.35rem);
+    color: var(--color-harbour);
+    padding-inline: 1rem;
+    text-align: center;
+  }
+  .intro-word span {
+    opacity: 0;
+    transform: translateY(0.6em);
+    transition: opacity 500ms, transform 500ms cubic-bezier(.2, .8, .2, 1);
+    transition-delay: calc(var(--i) * 70ms);
+  }
+  .intro-word.is-in span { opacity: 1; transform: none; }
+  .intro-word.is-out span { opacity: 0; transform: translateY(-0.4em); transition-delay: 0ms; transition-duration: 250ms; }
+</style>

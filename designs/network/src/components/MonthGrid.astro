@@ -1,0 +1,88 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { ymd, time } from '../lib/dates';
+
+interface Props { events: CollectionEntry<'events'>[] }
+const { events } = Astro.props;
+
+const byDay = new Map<string, CollectionEntry<'events'>[]>();
+for (const e of events) {
+  const k = ymd(e.data.start);
+  byDay.set(k, [...(byDay.get(k) ?? []), e]);
+}
+
+// Months from this month through the month of the last upcoming event.
+const today = ymd(new Date());
+const [ty, tm] = today.split('-').map(Number);
+const last = events.length ? ymd(events[events.length - 1].data.start) : today;
+const [ly, lm] = last.split('-').map(Number);
+const months: { y: number; m: number }[] = [];
+for (let y = ty, m = tm; y < ly || (y === ly && m <= lm); m === 12 ? (y++, (m = 1)) : m++) months.push({ y, m });
+
+const pad = (n: number) => String(n).padStart(2, '0');
+const monthName = (y: number, m: number) =>
+  new Intl.DateTimeFormat('en-CA', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, 1)));
+const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+---
+<div data-month-grid>
+  {months.map(({ y, m }, i) => {
+    const lead = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
+    const days = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    const cells = [...Array(lead).fill(null), ...Array.from({ length: days }, (_, d) => d + 1)];
+    while (cells.length % 7) cells.push(null);
+    return (
+      <section data-month={i} hidden={i !== 0} aria-label={monthName(y, m)}>
+        <div class="mb-4 flex items-center justify-between gap-3">
+          <button type="button" class="chip !h-10 !w-10 justify-center !p-0 disabled:opacity-30" data-month-step="-1" disabled={i === 0} aria-label="Previous month">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>
+          </button>
+          <h3 class="heading text-xl">{monthName(y, m)}</h3>
+          <button type="button" class="chip !h-10 !w-10 justify-center !p-0 disabled:opacity-30" data-month-step="1" disabled={i === months.length - 1} aria-label="Next month">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 3 5 5-5 5" /></svg>
+          </button>
+        </div>
+        <div class="grid grid-cols-7 overflow-hidden rounded-[var(--radius-link)] border border-mist-deep bg-mist-deep [gap:1px]" role="grid">
+          {weekdays.map((w) => <div class="bg-mist py-2 text-center text-xs font-semibold text-harbour/70" role="columnheader">{w}</div>)}
+          {cells.map((d) => {
+            if (!d) return <div class="min-h-24 bg-paper/60" role="gridcell" />;
+            const key = `${y}-${pad(m)}-${pad(d)}`;
+            const evs = byDay.get(key) ?? [];
+            const isToday = key === today;
+            return (
+              <div class:list={['min-h-24 bg-paper p-1.5 sm:p-2', { '!bg-white': evs.length }]} role="gridcell">
+                <span class:list={['data inline-grid h-6 min-w-6 place-items-center rounded-full text-sm', isToday ? 'bg-signal text-deep' : 'text-harbour/70']}>{d}</span>
+                <ul class="mt-1 space-y-1">
+                  {evs.map((e) => (
+                    <li data-event-type={e.data.type}>
+                      <a href={`/events/${e.id}`} class="block rounded-md bg-harbour px-1.5 py-1 text-[0.75rem] font-medium leading-tight text-paper hover:bg-deep">
+                        {!e.data.allDay && <span class="data block opacity-75">{time(e.data.start)}</span>}
+                        {e.data.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+    );
+  })}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-month-grid]').forEach((root) => {
+    const months = [...root.querySelectorAll<HTMLElement>('[data-month]')];
+    let current = 0;
+    root.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-month-step]');
+      if (!btn) return;
+      const next = Math.min(months.length - 1, Math.max(0, current + Number(btn.dataset.monthStep)));
+      months[current].hidden = true;
+      months[next].hidden = false;
+      current = next;
+      months[next].querySelector<HTMLButtonElement>(`[data-month-step="${btn.dataset.monthStep}"]:not(:disabled)`)?.focus()
+        ?? months[next].querySelector<HTMLButtonElement>('[data-month-step]:not(:disabled)')?.focus();
+    });
+  });
+</script>

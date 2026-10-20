@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Roster from '../../components/Roster.astro';
+import { getRosters } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const rosters = await getRosters();
+  // The newest roster lives at /team; older ones are archived at /team/<term>.
+  return rosters.slice(1).map((roster) => ({ params: { term: roster.data.term }, props: { roster } }));
+}
+
+const { roster } = Astro.props;
+const rosters = await getRosters();
+const terms = rosters.map((r, i) => ({ term: r.data.term, label: r.data.label, href: i === 0 ? '/team' : `/team/${r.data.term}` }));
+---
+<Base title={`Team ${roster.data.label}`} description={`The ${roster.data.label} LSCA executive team.`}>
+  <PageHeader title={`The ${roster.data.label} team`} intro="An archived roster. See the current team for who's running LSCA now." />
+  <Roster roster={roster} terms={terms} />
+</Base>

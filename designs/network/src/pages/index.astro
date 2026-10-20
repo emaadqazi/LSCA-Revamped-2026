@@ -1,0 +1,109 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import NetworkHero from '../components/NetworkHero.astro';
+import IntroLoader from '../components/IntroLoader.astro';
+import EventRow from '../components/EventRow.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import NewsItem from '../components/NewsItem.astro';
+import { getEvents, getArticles, getNews, getRosters } from '../lib/content';
+import { teamPhoto } from '../lib/images';
+import { SITE } from '../lib/site';
+
+const { upcoming } = await getEvents();
+const articles = (await getArticles()).slice(0, 2);
+const news = (await getNews()).slice(0, 4);
+const [roster] = await getRosters();
+const members = roster.data.portfolios.flatMap((p) => p.members).filter((m) => m.status === 'active');
+const faces = members.map((m) => ({ ...m, img: teamPhoto(m.photo) })).filter((m) => m.img).slice(0, 8);
+---
+<Base>
+  <script slot="head" is:inline>
+    // Decide before first paint whether to show the logo intro: once per visit, never with reduced motion.
+    // `?intro` forces it, handy when demoing.
+    try {
+      var force = /[?&]intro\b/.test(location.search);
+      if (force || (!sessionStorage.getItem('lsca-intro') && !matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+        document.documentElement.classList.add('intro');
+        // Safety net: never leave the page covered if the intro script fails to run.
+        setTimeout(function () {
+          var h = document.documentElement;
+          if (h.classList.contains('intro')) { h.classList.remove('intro'); dispatchEvent(new Event('lsca:intro-done')); }
+        }, 7000);
+      }
+    } catch (e) {}
+  </script>
+  <IntroLoader />
+  <NetworkHero />
+
+  <!-- Upcoming events -->
+  <section class="py-14 md:py-20" aria-labelledby="upcoming-h">
+    <div class="wrap">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <h2 id="upcoming-h" class="heading text-[clamp(1.75rem,3.5vw,2.5rem)]">Coming up</h2>
+        <a href="/events" class="link font-semibold">Full calendar</a>
+      </div>
+      {upcoming.length ? (
+        <div class="mt-8 grid gap-4">
+          {upcoming.slice(0, 3).map((e) => <EventRow event={e} />)}
+        </div>
+      ) : (
+        <p class="mt-6 max-w-xl rounded-[var(--radius-link)] border border-dashed border-mist-deep p-6 text-harbour/80">
+          Nothing is scheduled yet. New events are announced on <a class="link font-semibold" href={SITE.social.instagram} target="_blank" rel="noopener">Instagram</a> and in our Slack.
+        </p>
+      )}
+    </div>
+  </section>
+
+  <!-- Articles + industry news -->
+  <section class="border-y border-mist-deep/70 bg-mist py-14 md:py-20">
+    <div class="wrap grid gap-14 lg:grid-cols-12 lg:gap-10">
+      <div class="lg:col-span-7" aria-labelledby="articles-h">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <h2 id="articles-h" class="heading text-[clamp(1.75rem,3.5vw,2.5rem)]">Written by our members</h2>
+          <a href="/articles" class="link font-semibold">All articles</a>
+        </div>
+        {articles.length ? (
+          <div class="mt-8 grid gap-10 sm:grid-cols-2">
+            {articles.map((a) => <ArticleCard article={a} />)}
+          </div>
+        ) : (
+          <p class="mt-6 text-harbour/80">Our first articles are on the way.</p>
+        )}
+      </div>
+      <div class="lg:col-span-5" aria-labelledby="news-h">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <h2 id="news-h" class="heading text-[clamp(1.75rem,3.5vw,2.5rem)]">Industry news</h2>
+          <a href="/news" class="link font-semibold">More reading</a>
+        </div>
+        {news.length ? (
+          <ul class="mt-5 divide-y divide-mist-deep">
+            {news.map((n) => <NewsItem item={n} compact />)}
+          </ul>
+        ) : (
+          <p class="mt-6 text-harbour/80">Links to supply chain stories we're following will appear here.</p>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="bg-deep py-14 text-mist md:py-20" aria-labelledby="team-h">
+    <div class="wrap grid items-center gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-5">
+        <h2 id="team-h" class="heading text-[clamp(1.75rem,3.5vw,2.5rem)] text-paper">Run by students, for students</h2>
+        <p class="mt-4 max-w-md text-lg text-mist/80">
+          {members.length} executives across {roster.data.portfolios.length} portfolios plan every event, write our articles and keep our partners close. Since 2012, LSCA has reached more than 3,000 students in the Lazaridis School and beyond.
+        </p>
+        <a href="/team" class="btn btn-signal mt-7">Meet the team</a>
+      </div>
+      <ul class="grid grid-cols-4 gap-2 sm:gap-3 lg:col-span-7" aria-label="Some of our executives">
+        {faces.map((m) => (
+          <li class="aspect-[4/5] overflow-hidden rounded-xl bg-harbour">
+            <Image src={m.img!} alt={m.name} widths={[160, 240]} sizes="(min-width:1024px) 150px, 22vw" class="h-full w-full object-cover object-top" loading="lazy" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>

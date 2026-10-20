@@ -1,0 +1,53 @@
+---
+import LinkMark from './LinkMark.astro';
+import { landDots } from '../lib/landDots';
+import { SITE } from '../lib/site';
+---
+<section class="hero relative overflow-hidden bg-deep text-paper" data-globe>
+  <div class="wrap relative grid min-h-[min(100svh-4rem,54rem)] items-center gap-4 pb-12 pt-2 md:grid-cols-12 md:gap-8 md:py-16">
+    <div class="relative order-2 z-10 md:order-1 md:col-span-6 lg:col-span-6">
+      <h1 class="display reveal text-[clamp(2.4rem,5.4vw,4.6rem)] leading-[0.98]" style="--d: 0.9s">
+        Laurier's supply chain club, since 2012.
+      </h1>
+      <p class="reveal mt-6 max-w-[32rem] text-lg text-mist/80 md:text-xl" style="--d: 1.15s">
+        We connect students with the people who plan, source, make and move the world's goods, through speaker panels, case competitions and workshops.
+      </p>
+      <div class="reveal mt-8 flex flex-wrap gap-3" style="--d: 1.35s">
+        <a href="/events" class="btn btn-signal">See upcoming events</a>
+        <a href={SITE.social.slack} class="btn border-[1.5px] border-mist/40 text-paper hover:border-paper" target="_blank" rel="noopener">Join our Slack</a>
+      </div>
+    </div>
+
+    <div class="relative order-1 -mx-4 aspect-square max-h-[26rem] md:order-2 md:col-span-6 md:mx-0 md:max-h-none lg:-mr-6" aria-hidden="true">
+      <div class="absolute inset-0" data-globe-canvas></div>
+      <div class="globe-fallback absolute inset-[18%] opacity-60" style="--lm-dark: #e3ebf1;"><LinkMark /></div>
+      <div class="pointer-events-none absolute left-0 top-0 opacity-0 transition-opacity" data-globe-label>
+        <span class="ml-4 -mt-3 block whitespace-nowrap rounded-full bg-paper px-2.5 py-1 text-xs font-semibold text-deep shadow">Waterloo, ON</span>
+      </div>
+    </div>
+  </div>
+  <p class="sr-only">Decorative animation: a globe of shipping routes connecting trade hubs around the world to Waterloo.</p>
+</section>
+
+<script type="application/json" id="land-dots" set:html={JSON.stringify(landDots)} />
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-globe]');
+  const data = document.getElementById('land-dots')?.textContent;
+  if (root && data) {
+    // Load three.js after first paint so the headline never waits on it.
+    const load = import('../scripts/globe');
+    const start = () => load.then(({ mountGlobe }) => mountGlobe(root, JSON.parse(data)));
+    // If the logo intro is playing, assemble the globe as the curtain lifts.
+    if (document.documentElement.classList.contains('intro')) addEventListener('lsca:intro-done', start, { once: true });
+    else start();
+  }
+</script>
+
+<style>
+  [data-globe-ready] .globe-fallback { display: none; }
+  /* Copy arrives as the globe finishes assembling. */
+  .reveal { animation: reveal 700ms cubic-bezier(.2,.8,.2,1) var(--d, 0s) both; }
+  @keyframes reveal { from { opacity: 0; transform: translateY(14px); } }
+  :global(html.intro:not(.intro-leaving)) .reveal { animation-play-state: paused; }
+</style>

@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import NewsItem from '../components/NewsItem.astro';
+import { getNews } from '../lib/content';
+import { groupByMonth } from '../lib/dates';
+
+const news = await getNews();
+const groups = groupByMonth(news, (n) => n.data.date);
+const tags = [...new Set(news.map((n) => n.data.tag))].sort();
+---
+<Base title="Industry news" description="Supply chain news and reading picked by LSCA: logistics, procurement, trade policy and technology.">
+  <PageHeader title="Industry news" intro="Stories from across supply chain that our team thinks are worth your time, each with a line on why it matters." />
+  <section class="wrap py-12 md:py-16">
+    {tags.length > 1 && (
+      <div class="js-only mb-8 flex flex-wrap gap-2" role="group" aria-label="Filter by topic" hidden>
+        <button type="button" class="chip" aria-pressed="true" data-tag="all">All topics</button>
+        {tags.map((t) => <button type="button" class="chip" aria-pressed="false" data-tag={t}>{t}</button>)}
+      </div>
+    )}
+    {news.length ? (
+      <div class="max-w-3xl space-y-10">
+        {groups.map((g) => (
+          <section aria-label={g.label} data-news-group>
+            <h2 class="data border-b-2 border-harbour pb-2 text-lg text-harbour/70">{g.label}</h2>
+            <ul class="divide-y divide-mist-deep">{g.items.map((n) => <NewsItem item={n} />)}</ul>
+          </section>
+        ))}
+      </div>
+    ) : (
+      <p class="max-w-xl rounded-[var(--radius-link)] border border-dashed border-mist-deep p-6 text-harbour/80">No links yet. Check back soon.</p>
+    )}
+  </section>
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.js-only').forEach((el) => (el.hidden = false));
+  const btns = document.querySelectorAll<HTMLButtonElement>('[data-tag]');
+  btns.forEach((b) =>
+    b.addEventListener('click', () => {
+      btns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      document.querySelectorAll<HTMLElement>('[data-news-tag]').forEach((li) => {
+        li.hidden = b.dataset.tag !== 'all' && li.dataset.newsTag !== b.dataset.tag;
+      });
+      document.querySelectorAll<HTMLElement>('[data-news-group]').forEach((g) => {
+        g.hidden = ![...g.querySelectorAll<HTMLElement>('[data-news-tag]')].some((li) => !li.hidden);
+      });
+    }),
+  );
+</script>

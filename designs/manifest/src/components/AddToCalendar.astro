@@ -1,0 +1,10 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { googleCalendarUrl } from '../lib/ics';
+interface Props { event: CollectionEntry<'events'> }
+const { event } = Astro.props;
+---
+<div class="flex flex-wrap gap-2">
+  <a href={googleCalendarUrl(event)} class="btn btn-ghost !py-2 text-sm" target="_blank" rel="noopener">Add to Google Calendar</a>
+  <a href={`/events/${event.id}.ics`} class="btn btn-ghost !py-2 text-sm" download>Download .ics (Apple, Outlook)</a>
+</div>

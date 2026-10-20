@@ -1,0 +1,86 @@
+---
+import LinkMark from './LinkMark.astro';
+import { NAV, SITE } from '../lib/site';
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+---
+<header class="sticky top-0 z-40 border-b border-mist-deep/70 bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/85">
+  <div class="wrap flex h-16 items-center justify-between gap-6 md:h-[4.5rem]">
+    <a href="/" class="flex items-center gap-2.5" aria-label="LSCA home">
+      <LinkMark class="h-9 w-9 md:h-10 md:w-10" />
+      <span class="leading-none">
+        <span class="heading block text-[1.05rem]">LSCA</span>
+        <span class="mt-0.5 hidden text-[0.75rem] font-medium text-harbour/70 sm:block">Laurier Supply Chain Association</span>
+      </span>
+    </a>
+
+    <nav aria-label="Main" class="hidden lg:block">
+      <ul class="flex items-center gap-7 text-[0.95rem] font-medium">
+        {NAV.map((n) => (
+          <li>
+            <a
+              href={n.href}
+              aria-current={isActive(n.href) ? 'page' : undefined}
+              class="relative py-2 text-harbour/80 transition-colors hover:text-harbour aria-[current=page]:text-harbour after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-current after:transition-transform hover:after:scale-x-100 aria-[current=page]:after:scale-x-100"
+            >{n.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href={SITE.social.slack} class="btn btn-primary hidden !py-2 text-sm sm:inline-flex" rel="noopener" target="_blank">Join on Slack</a>
+      <button
+        type="button"
+        class="-mr-2 grid h-11 w-11 place-items-center rounded-full lg:hidden"
+        aria-controls="mobile-nav"
+        aria-expanded="false"
+        data-menu-toggle
+      >
+        <span class="sr-only">Menu</span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path class="menu-open" d="M4 7h16M4 12h16M4 17h10" />
+          <path class="menu-close hidden" d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-nav" class="hidden border-t border-mist-deep/70 bg-paper lg:hidden" data-menu>
+    <nav aria-label="Mobile" class="wrap flex min-h-[calc(100dvh-4rem)] flex-col py-6">
+      <ul class="divide-y divide-mist-deep/70">
+        {NAV.map((n) => (
+          <li>
+            <a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined} class="heading flex items-center justify-between py-4 text-2xl aria-[current=page]:text-signal-ink">
+              {n.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div class="mt-auto space-y-3 pt-8">
+        <a href={SITE.social.slack} class="btn btn-primary w-full justify-center" target="_blank" rel="noopener">Join on Slack</a>
+        <div class="flex justify-center gap-6 text-sm font-medium">
+          <a class="link" href={SITE.social.instagram} target="_blank" rel="noopener">Instagram</a>
+          <a class="link" href={SITE.social.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+          <a class="link" href={`mailto:${SITE.email}`}>Email</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  const setOpen = (open: boolean) => {
+    if (!btn || !menu) return;
+    btn.setAttribute('aria-expanded', String(open));
+    menu.classList.toggle('hidden', !open);
+    btn.querySelector('.menu-open')?.classList.toggle('hidden', open);
+    btn.querySelector('.menu-close')?.classList.toggle('hidden', !open);
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+  };
+  btn?.addEventListener('click', () => setOpen(btn.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && setOpen(false));
+  matchMedia('(min-width: 1024px)').addEventListener('change', (m) => m.matches && setOpen(false));
+</script>

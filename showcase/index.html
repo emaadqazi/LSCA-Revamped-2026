@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LSCA website designs</title>
+  <meta name="robots" content="noindex" />
+  <style>
+    :root { --mist:#e3ebf1; --mist-deep:#cfdce6; --harbour:#0b4558; --signal:#0a9cc0; --signal-ink:#07738e; --paper:#f8fbfd; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--paper); color:var(--harbour); font:17px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { max-width: 64rem; margin: 0 auto; padding: 3.5rem 1rem 5rem; }
+    h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.05; margin: 0; letter-spacing: -0.02em; }
+    .intro { max-width: 38rem; margin: 1rem 0 2.5rem; opacity: .85; }
+    ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; }
+    li { display: grid; gap: 1.25rem; grid-template-columns: 1fr; align-items: center; border: 1px solid var(--mist-deep); border-radius: 1.25rem; padding: 1.25rem; background: white; }
+    @media (min-width: 720px) { li { grid-template-columns: 3.5rem 1fr auto; padding: 1.5rem 1.75rem; } }
+    .letter { width: 3.5rem; height: 3.5rem; border-radius: 999px; background: var(--harbour); color: var(--paper); display: grid; place-items: center; font-weight: 700; font-size: 1.25rem; }
+    h2 { margin: 0; font-size: 1.35rem; }
+    p { margin: .25rem 0 0; }
+    .muted { opacity: .7; font-size: .9rem; }
+    a.btn { display: inline-block; text-decoration: none; background: var(--harbour); color: var(--paper); border-radius: 999px; padding: .65rem 1.3rem; font-weight: 600; white-space: nowrap; }
+    a.btn:hover { background: #062a36; }
+    a.btn[aria-disabled="true"] { background: var(--mist-deep); color: var(--harbour); pointer-events: none; }
+    :focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>LSCA website designs</h1>
+    <p class="intro">Each option is a complete, working version of the site with the same content. Open each one and click through the pages. Try it on your phone too, then tell us which one you'd like to launch.</p>
+    <ol id="list"></ol>
+    <noscript><p>Turn on JavaScript to see the list of designs.</p></noscript>
+  </main>
+  <script>
+    const local = ['localhost', '127.0.0.1'].includes(location.hostname);
+    fetch('designs.json').then((r) => r.json()).then((designs) => {
+      document.getElementById('list').innerHTML = designs.map((d, i) => {
+        const href = local ? `http://localhost:${d.port}` : d.url;
+        return `<li>
+          <span class="letter" aria-hidden="true">${String.fromCharCode(65 + i)}</span>
+          <div><h2>Option ${String.fromCharCode(65 + i)}: ${d.name}</h2><p>${d.description}</p>
+          ${href ? '' : '<p class="muted">Not deployed yet.</p>'}</div>
+          <a class="btn" href="${href || '#'}" ${href ? 'target="_blank" rel="noopener"' : 'aria-disabled="true"'}>Open ${d.name}</a>
+        </li>`;
+      }).join('');
+    });
+  </script>
+</body>
+</html>

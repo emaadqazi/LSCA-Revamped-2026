@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Roster from '../../components/Roster.astro';
+import { getRosters } from '../../lib/content';
+
+const rosters = await getRosters();
+const [current] = rosters;
+const terms = rosters.map((r, i) => ({ term: r.data.term, label: r.data.label, href: i === 0 ? '/team' : `/team/${r.data.term}` }));
+const count = current.data.portfolios.flatMap((p) => p.members).filter((m) => m.status === 'active').length;
+---
+<Base title="Team" description={`Meet the ${current.data.label} LSCA executive team.`}>
+  <PageHeader
+    title="The team"
+    intro={`${count} students across ${current.data.portfolios.length} portfolios, studying business, economics, computer science and more. This is the ${current.data.label} executive team.`}
+  />
+  <Roster roster={current} terms={terms} />
+</Base>
