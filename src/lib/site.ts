@@ -11,7 +11,6 @@ export const SITE = {
   social: {
     instagram: 'https://www.instagram.com/lauriersupplychain/',
     linkedin: 'https://www.linkedin.com/company/lauriersupplychainassociation/',
-    slack: 'https://join.slack.com/t/lsca-wlu/shared_invite',
   },
 };
 

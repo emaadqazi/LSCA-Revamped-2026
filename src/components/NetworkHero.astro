@@ -1,7 +1,6 @@
 ---
 import LinkMark from './LinkMark.astro';
 import { landDots } from '../lib/landDots';
-import { SITE } from '../lib/site';
 ---
 <section class="hero relative overflow-hidden bg-deep text-paper" data-globe>
   <div class="wrap relative grid min-h-[min(100svh-4rem,54rem)] items-center gap-4 pb-12 pt-2 md:grid-cols-12 md:gap-8 md:py-16">
@@ -14,7 +13,6 @@ import { SITE } from '../lib/site';
       </p>
       <div class="reveal mt-8 flex flex-wrap gap-3" style="--d: 1.35s">
         <a href="/events" class="btn btn-signal">See upcoming events</a>
-        <a href={SITE.social.slack} class="btn border-[1.5px] border-mist/40 text-paper hover:border-paper" target="_blank" rel="noopener">Join our Slack</a>
       </div>
     </div>
 

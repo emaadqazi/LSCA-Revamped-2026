@@ -29,7 +29,6 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
     </nav>
 
     <div class="flex items-center gap-2">
-      <a href={SITE.social.slack} class="btn btn-primary hidden !py-2 text-sm sm:inline-flex" rel="noopener" target="_blank">Join on Slack</a>
       <button
         type="button"
         class="-mr-2 grid h-11 w-11 place-items-center rounded-full lg:hidden"
@@ -57,8 +56,7 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
           </li>
         ))}
       </ul>
-      <div class="mt-auto space-y-3 pt-8">
-        <a href={SITE.social.slack} class="btn btn-primary w-full justify-center" target="_blank" rel="noopener">Join on Slack</a>
+      <div class="mt-auto pt-8">
         <div class="flex justify-center gap-6 text-sm font-medium">
           <a class="link" href={SITE.social.instagram} target="_blank" rel="noopener">Instagram</a>
           <a class="link" href={SITE.social.linkedin} target="_blank" rel="noopener">LinkedIn</a>
