@@ -54,3 +54,17 @@ Production currently shows "nothing scheduled / first articles on the way" empty
 - Content is **duplicated** in each design folder. Any content added before the decision must be added to both, or only to the likely winner.
 - The 3D globe is about 130 KB gzipped (three.js) and loads after first paint.
 - The Instagram, LinkedIn and Slack URLs and `info@lsca.ca` / phone number were copied from the old site. Confirm they're still correct.
+
+---
+
+## Session 2: 2026-10-21
+
+### Done
+- **Network (Option B) chosen.** It was moved from `designs/network` to the repo root, so it's now a single plain Astro project (`npm install && npm run dev`, port 4321).
+- Removed `designs/manifest`, `showcase/`, `scripts/dev-all.mjs` and the npm-workspace root `package.json`. All are still in git history at `43c7802`.
+- `.github/workflows/deploy.yml` now builds `path: .`. The design's README is now the root `README.md`. `docs/README.md` and `design-notes.md` were updated to match.
+- A production build from the root passes (10 pages).
+
+### Next steps
+- Polish pass on the non-hero parts of the site (the user said "we need to polish up some of the other stuff"; specifics TBD).
+- The Vercel/showcase step in Session 1's next steps no longer applies. Deploy is just GitHub Pages from the root. Remove the draft example files before launch.

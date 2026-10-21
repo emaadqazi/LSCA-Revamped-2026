@@ -1,45 +1,82 @@
-# LSCA website: design options
+# lauriersupplychain.ca
 
-Each folder in `designs/` is a complete, working copy of the site with the same content, so the presidents can compare real pages rather than mockups. When one is chosen, it becomes the live site and the others can be deleted.
-
-| Folder | Option | What's different |
-| --- | --- | --- |
-| `designs/manifest` | A: Manifest | The clean, structured site. The chain-link logo interlocks in the hero. |
-| `designs/network` | B: Network | Same site, plus a logo intro (the links draw in and interlock before the home page) and a 3D globe hero of shipping routes that lead back to Waterloo. |
-
-## Run every design locally
+The website for the Laurier Supply Chain Association. Built with [Astro](https://astro.build) and Tailwind CSS, deployed to GitHub Pages.
 
 ```sh
-npm install      # once, from this folder; installs every design
-npm run dev      # starts all of them
+npm install
+npm run dev      # http://localhost:4321, shows drafts
+npm run build    # production build in dist/, drafts removed
 ```
 
-- Showcase page: http://localhost:4320 (links to each option)
-- Manifest: http://localhost:4321
-- Network: http://localhost:4322
+Pushing to `main` deploys automatically. The site also rebuilds every morning so finished events move to "Past events" without anyone touching it.
 
-To run just one design: `npm run dev:manifest` or `npm run dev:network`.
+All content lives in `src/content/`. You never need to edit a page to add content.
 
-The Network intro plays once per browser tab, so it doesn't repeat on every visit. To replay it while presenting, add `?intro` to the URL: http://localhost:4322/?intro
+## Add an event
 
-## Add another design
+Create `src/content/events/YYYY-MM-short-name.md`. The filename becomes the URL (`/events/2026-11-networking-night`).
 
-1. Copy a folder: `cp -R designs/manifest designs/my-idea` (skip `node_modules` and `dist` if present).
-2. In `designs/my-idea/package.json`, change `"name"` to something unique, e.g. `lsca-design-my-idea`.
-3. Add an entry to `showcase/designs.json` with a new `port` (4323, 4324, …).
-4. Run `npm install` from this folder, then `npm run dev`.
+```md
+---
+title: Industry Networking Night
+start: 2026-11-12T18:30:00-05:00   # always include the Toronto offset
+end: 2026-11-12T21:00:00-05:00
+location: Lazaridis Hall, Atrium
+type: Networking                   # Speaker panel | Social | Competition | Workshop | Networking | Info session
+summary: One sentence shown in the event list.
+audience: Open to all students.    # optional
+registerUrl: https://...           # optional, shows a Register button
+speakers:                          # optional
+  - name: Jane Doe
+    title: Supply Chain Analyst at Example Co.
+    photo: Jane-Doe.jpeg           # file in src/assets/speakers/
+    linkedin: https://www.linkedin.com/in/...
+draft: true                        # optional: preview locally without publishing
+---
 
-## Share with the presidents on Vercel
+Full description in Markdown.
+```
 
-Create one Vercel project per design, all from this same GitHub repo:
+**Time zone offset:** use `-04:00` between mid-March and early November (EDT) and `-05:00` otherwise (EST). For an event with no set time, add `allDay: true`.
 
-1. In Vercel, choose **Add New → Project**, import the repo, and set **Root Directory** to `designs/manifest`. Vercel detects Astro on its own. Deploy.
-2. Repeat with Root Directory `designs/network`, and so on for each design.
-3. Optional: one more project with Root Directory `showcase` and Framework Preset **Other**. This gives the presidents a single link that lists every option.
-4. Paste each design's Vercel URL into the `url` fields in `showcase/designs.json` and push. The showcase uses these links when it isn't running on localhost.
+The event appears on the home page, the events list, the month calendar and the subscribable calendar feed (`/events.ics`).
 
-Every push redeploys all the projects automatically, so the links always show the latest version.
+## Publish an article
 
-## After a design is chosen
+Copy `src/content/articles/how-to-write-an-lsca-article.md`, which shows every formatting option. Fill in `title`, `author`, `authorRole`, `date`, `excerpt` and `tags`, write in Markdown, and remove `draft: true` when it's ready.
 
-The GitHub Pages workflow (`.github/workflows/deploy.yml`) deploys the folder named in its `path:` setting to lauriersupplychain.ca. It currently points at `designs/manifest`; change it if another design wins. Each design's own `README.md` explains how to add events, articles, news links and team members.
+## Add an industry news link
+
+Add an entry to the top of `src/content/news/links.json`:
+
+```json
+{
+  "id": "2026-10-port-of-vancouver",
+  "title": "Headline exactly as published",
+  "url": "https://...",
+  "source": "The Globe and Mail",
+  "date": "2026-10-18",
+  "tag": "Logistics",
+  "takeaway": "One sentence on why it matters to students."
+}
+```
+
+`id` must be unique. `tag` is one of: Logistics, Procurement, Trade & policy, Technology, Careers, Sustainability.
+
+## Update the team
+
+Each school year has its own file in `src/content/team/` (e.g. `2025-26.json`). The newest file is shown at `/team`, and older years stay available at `/team/2025-26`.
+
+To start a new year, copy last year's file to `2026-27.json`, change `term` and `label`, and edit the members. Headshots go in `src/assets/team/2026-27/`; set `photo` to `"2026-27/FirstLast.jpg"`. If a member has no photo yet, leave `photo` out and the card shows their initials. Any size works because images are cropped to 4:5 and compressed at build time, but consistent media-day headshots look best.
+
+For a director role that isn't filled yet, add a placeholder:
+
+```json
+{ "name": "Open position", "role": "Director of Events", "status": "hiring", "applyUrl": "https://forms.gle/..." }
+```
+
+## Design notes
+
+- Colours come from the logo: `mist #E3EBF1`, `harbour #0B4558`, `signal #0A9CC0`, `deep #062A36` (see `src/styles/global.css`). Use `signal-ink #07738E` for small light-blue text on light backgrounds; plain `signal` doesn't meet contrast requirements there.
+- One typeface, Archivo, used at three widths: wide (`.display`) for page titles, normal for body text, condensed (`.data`) for dates and times.
+- The chain-link mark is `src/components/LinkMark.astro`. It's drawn in SVG, so it stays sharp at any size.

@@ -24,8 +24,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: withastro/action@v6
         with:
-          # The design chosen for launch. Update this if a different design wins.
-          path: ./designs/manifest
+          # The Astro project lives at the repo root.
+          path: .
   deploy:
     needs: build
     runs-on: ubuntu-latest

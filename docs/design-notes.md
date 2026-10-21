@@ -3,7 +3,7 @@
 ## Brief
 "Similar to our logo's shades of blue, works on every device, attractive and doesn't look AI-generated. Simple, clean, polished, screaming supply chain."
 
-## Visual system (shared by every design)
+## Visual system
 
 **Colours**, taken from the logo and defined in `src/styles/global.css`:
 
@@ -26,7 +26,7 @@
 
 ## Choices made on purpose
 - **Avoided common signs of an AI-generated page** (per the frontend-design skill): no all-caps eyebrow labels, no monospace data labels, no grids of identical cards with soft shadows, no gradient blobs or glassmorphism, no "→" appended to links, sentence-case copy.
-- **One bold moment per design:** the interlocking logo in Manifest; the loader and globe in Network. Everything else stays quiet.
+- **Bold moments are limited to the intro loader and the globe hero.** Everything else stays quiet.
 - **Event cards look like shipping labels**: a tear-off date stub with a dashed perforation and punched holes. The "This week" chip appears automatically.
 - **Headshots:** shared 4:5 crop, slightly desaturated until hover so mismatched photos sit together. A member without a photo gets an initials monogram, so the grid stays consistent before and after media day.
 - **Drafts** (`draft: true`) render only in dev, so the team can preview content safely.
@@ -39,10 +39,8 @@
 - **No HTML comments inside JSX expressions** in `.astro` files. Use `{/* … */}` outside the expression.
 - **Headless Chrome screenshots** below about 500px wide are clipped by its minimum window size. Use Playwright with `devices['iPhone 13']` for real mobile checks (the script used last session was in the session scratchpad, not the repo).
 - **Images live in `src/assets`, not `public`**, so Astro compresses them (old headshots went from up to 800 KB to 3–57 KB).
-- **The globe's land dots** are computed at build time in `designs/network/src/lib/landDots.ts` (world-atlas 110m + d3-geo) and embedded as JSON. The browser never downloads map data.
+- **The globe's land dots** are computed at build time in `src/lib/landDots.ts` (world-atlas 110m + d3-geo) and embedded as JSON. The browser never downloads map data.
 - **The intro loader and hero stay in sync:** the hero's `.reveal` animations are paused while `html.intro` is set, and the globe mounts on the `lsca:intro-done` event.
 
 ## Ideas not yet tried
-- The logo intro on Option A.
-- A third design direction (for example a lighter, editorial take, or one built around a "route map" timeline of events).
-- Connecting-dots motifs elsewhere in the Network design (section dividers, the events timeline).
+- Connecting-dots motifs elsewhere in the site (section dividers, the events timeline).

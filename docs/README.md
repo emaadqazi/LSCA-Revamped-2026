@@ -6,27 +6,19 @@ Start here at the beginning of each working session.
 | --- | --- |
 | [progress.md](progress.md) | What's done, what's waiting on other people, and suggested next steps. **Update this at the end of every session.** |
 | [design-notes.md](design-notes.md) | Why things look and work the way they do, plus problems already solved so they aren't solved twice. |
-| [../README.md](../README.md) | How the multi-design setup works: running locally, adding a design, deploying to Vercel. |
-| `designs/<name>/README.md` | How to add events, articles, news links and team members to a design. |
+| [../README.md](../README.md) | Running the site, and how to add events, articles, news links and team members. |
 
 ## The project in one paragraph
 
-A rebuild of [lauriersupplychain.ca](https://www.lauriersupplychain.ca) (the old site was a single-page Vite + React app on GitHub Pages under `emaadqazi.github.io`). The president asked for an updated exec team (directors added once hired, consistent headshots after the October media day), a **Published Articles** tab, a place for **industry news/links**, and a **calendar of future events**. The new site is Astro 7 + Tailwind 4, with content stored as Markdown/JSON files edited through Git. There are currently **two design options** in `designs/` for the presidents to choose between.
+A rebuild of [lauriersupplychain.ca](https://www.lauriersupplychain.ca) (the old site was a single-page Vite + React app on GitHub Pages under `emaadqazi.github.io`). The president asked for an updated exec team (directors added once hired, consistent headshots after the October media day), a **Published Articles** tab, a place for **industry news/links**, and a **calendar of future events**. The new site is Astro 7 + Tailwind 4, with content stored as Markdown/JSON files edited through Git. The site uses the **Network** design (logo intro loader + 3D globe hero), chosen on 2026-10-21 over the simpler Manifest option, which was removed (it's still in git history at commit `43c7802`).
 
 ## Quick start
 
 ```sh
-npm install                 # once, from the repo root (npm workspaces)
-npm run dev                 # all designs + showcase
-npm run dev:network         # just one design
-npm run build               # production build of every design
+npm install          # once, from the repo root
+npm run dev          # http://localhost:4321 (drafts shown); /?intro replays the logo intro
+npm run build        # production build in dist/
 ```
-
-| URL | What |
-| --- | --- |
-| http://localhost:4320 | Showcase page linking to each design |
-| http://localhost:4321 | Option A: Manifest |
-| http://localhost:4322 | Option B: Network (`/?intro` replays the logo intro) |
 
 If a port is stuck from an old server: `pkill -f astro.mjs`. Astro 7's dev server runs as its own process, so stopping the parent script doesn't always stop it.
 
@@ -34,28 +26,19 @@ If a port is stuck from an old server: `pkill -f astro.mjs`. Astro 7's dev serve
 
 ```
 LSCA_Website_2026/
-  designs/
-    manifest/            Option A, a complete Astro site
-    network/             Option B, the same site plus logo intro and 3D globe hero
-  showcase/              index.html + designs.json (names, ports, Vercel URLs)
-  scripts/dev-all.mjs    starts every design and the showcase
-  docs/                  these notes
-  members.md             the user's draft 2026–27 roster (incomplete)
-  .github/workflows/     GitHub Pages deploy (points at designs/manifest)
-```
-
-Inside each design:
-
-```
-src/content/           ← all editable content
-  events/*.md           one file per event
-  articles/*.md         one file per article
-  news/links.json       industry news links
-  team/<term>.json      one roster per school year (newest is shown at /team)
-src/assets/team/<term>/ headshots (optimized at build time)
-src/assets/speakers/    speaker photos
-src/components/         UI pieces (EventRow, MemberCard, MonthGrid, LinkMark, …)
-src/lib/                site config, date/time-zone helpers, .ics generator, content queries
-src/pages/              routes
-src/styles/global.css   colour/type tokens
+  src/content/           ← all editable content
+    events/*.md           one file per event
+    articles/*.md         one file per article
+    news/links.json       industry news links
+    team/<term>.json      one roster per school year (newest is shown at /team)
+  src/assets/team/<term>/ headshots (optimized at build time)
+  src/assets/speakers/    speaker photos
+  src/components/         UI pieces (IntroLoader, NetworkHero, EventRow, MemberCard, MonthGrid, LinkMark, …)
+  src/lib/                site config, date/time-zone helpers, .ics generator, content queries, globe land dots
+  src/pages/              routes
+  src/styles/global.css   colour/type tokens
+  public/                 favicon, OG image, CNAME, robots.txt
+  docs/                   these notes
+  members.md              the user's draft 2026–27 roster (incomplete)
+  .github/workflows/      GitHub Pages deploy (builds the repo root)
 ```

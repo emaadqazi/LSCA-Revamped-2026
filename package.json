@@ -1,12 +1,32 @@
 {
-  "name": "lsca-website-designs",
-  "private": true,
+  "name": "lsca-website",
   "type": "module",
-  "workspaces": ["designs/*"],
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
-    "dev": "node scripts/dev-all.mjs",
-    "dev:manifest": "npm run dev -w designs/manifest -- --port 4321",
-    "dev:network": "npm run dev -w designs/network -- --port 4322",
-    "build": "npm run build --workspaces"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@tailwindcss/typography": "^0.5.20",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.4.1",
+    "d3-geo": "^3.1.1",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.3.3",
+    "three": "^0.186.1",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/d3-geo": "^3.1.0",
+    "@types/three": "^0.186.0",
+    "@types/topojson-client": "^3.1.5",
+    "@types/topojson-specification": "^1.0.5"
   }
 }
