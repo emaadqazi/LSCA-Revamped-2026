@@ -68,3 +68,10 @@ Production currently shows "nothing scheduled / first articles on the way" empty
 ### Next steps
 - Polish pass on the non-hero parts of the site (the user said "we need to polish up some of the other stuff"; specifics TBD).
 - The Vercel/showcase step in Session 1's next steps no longer applies. Deploy is just GitHub Pages from the root. Remove the draft example files before launch.
+- **2026–27 roster added** (`src/content/team/2026-27.json`, 24 people in 8 portfolios) from `members/list.md`, with headshots copied into `src/assets/team/2026-27/`. `/team` now shows 2026–27, and 2025–26 is archived at `/team/2025-26`.
+  - **No photo (initials placeholder):** Findlay Stone, Estelle Sing Fat, and Devon Sharma (the supplied file was LinkedIn's default #OpenToWork avatar).
+  - Returning members kept their LinkedIn links and their program year was bumped by one (e.g. 3rd → 4th). New members have no program or LinkedIn yet.
+  - Confirmed: "Quinn Woodlock" is correct (the photo file was misnamed `Quinn-Lockwood.jpg`). Katie Lee is a **different person** from 2025–26's Kaitlyn Lee, so she has no carried-over LinkedIn or program.
+  - Katie's photo came as a circle on white. It was cropped to the largest 4:5 box inside the circle, so it's small (244×306) and a full-size original would be sharper.
+- **Member emails are shown on cards** (optional `email` field in the team schema, rendered as a `mailto:` link under each person) so visitors can reach the exec for inquiries. Emails come from `members/list.md`.
+- `members/` (the raw list and photos) is intentionally left **untracked**.

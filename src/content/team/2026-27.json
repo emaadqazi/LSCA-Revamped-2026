@@ -1,0 +1,199 @@
+{
+  "term": "2026-27",
+  "label": "2026–27",
+  "portfolios": [
+    {
+      "name": "Presidents",
+      "members": [
+        {
+          "name": "Ben Maycock",
+          "role": "Co-President",
+          "program": "4th Year Economics",
+          "email": "mayc0998@mylaurier.ca",
+          "photo": "2026-27/BenMaycock.jpg",
+          "linkedin": "https://www.linkedin.com/in/ben-maycock-56a84b29b/"
+        },
+        {
+          "name": "Hailey Krywiak",
+          "role": "Co-President",
+          "program": "4th Year BBA",
+          "email": "kryw5347@mylaurier.ca",
+          "photo": "2026-27/HaileyKrywiak.png",
+          "linkedin": "https://www.linkedin.com/in/hailey-krywiak-4ba971303/"
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "members": [
+        {
+          "name": "Leonidas Bakalis",
+          "role": "Executive Vice President",
+          "program": "2nd Year BBA",
+          "email": "baka7970@mylaurier.ca",
+          "photo": "2026-27/LeonidasBakalis.jpg",
+          "linkedin": "https://www.linkedin.com/in/leonidas-bakalis-014209308/"
+        },
+        {
+          "name": "Brady Kuzma",
+          "role": "Senior Advisor",
+          "program": "4th Year BBA/BSc",
+          "email": "kuzm6431@mylaurier.ca",
+          "photo": "2026-27/BradyKuzma.jpg",
+          "linkedin": "https://www.linkedin.com/in/brady-kuzma/"
+        },
+        {
+          "name": "Jullieanne Dao",
+          "role": "VP of Internal",
+          "email": "daox1988@mylaurier.ca",
+          "photo": "2026-27/JullieanneDao.jpg"
+        },
+        {
+          "name": "Findlay Stone",
+          "role": "Director of Internal",
+          "email": "ston0673@mylaurier.ca"
+        },
+        {
+          "name": "Matthew Nagy",
+          "role": "First Year Representative",
+          "email": "nagy2488@mylaurier.ca",
+          "photo": "2026-27/MatthewNagy.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Corporate Relations",
+      "members": [
+        {
+          "name": "Kavya Patel",
+          "role": "VP of Corporate Relations",
+          "program": "3rd Year BBA",
+          "email": "pate0055@mylaurier.ca",
+          "photo": "2026-27/KavyaPatel.jpg",
+          "linkedin": "https://www.linkedin.com/in/kavya-patell/"
+        },
+        {
+          "name": "Bethany Lassaline",
+          "role": "Director of Corporate Relations",
+          "email": "lass9202@mylaurier.ca",
+          "photo": "2026-27/BethanyLassaline.jpg"
+        },
+        {
+          "name": "Evangline Yamine",
+          "role": "Director of Corporate Relations",
+          "email": "yami9878@mylaurier.ca",
+          "photo": "2026-27/EvanglineYamine.jpg"
+        },
+        {
+          "name": "Matteo Volpini",
+          "role": "Director of Corporate Relations",
+          "email": "volp2887@mylaurier.ca",
+          "photo": "2026-27/MatteoVolpini.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Education",
+      "members": [
+        {
+          "name": "Quinn Woodlock",
+          "role": "VP of Education",
+          "email": "wood5348@mylaurier.ca",
+          "photo": "2026-27/QuinnWoodlock.jpg"
+        },
+        {
+          "name": "Devon Sharma",
+          "role": "Director of Education",
+          "email": "shar0015@mylaurier.ca"
+        },
+        {
+          "name": "Nigel Chay",
+          "role": "Director of Education",
+          "email": "chay7941@mylaurier.ca",
+          "photo": "2026-27/NigelChay.jpg"
+        },
+        {
+          "name": "Wei Shao",
+          "role": "Director of Education",
+          "email": "shao9114@mylaurier.ca",
+          "photo": "2026-27/WeiShao.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "members": [
+        {
+          "name": "Emma Kllapi",
+          "role": "Co-VP of Events",
+          "email": "klla0035@mylaurier.ca",
+          "photo": "2026-27/EmmaKllapi.jpg"
+        },
+        {
+          "name": "Bryan Wu",
+          "role": "Co-VP of Events",
+          "email": "wuxx1243@mylaurier.ca",
+          "photo": "2026-27/BryanWu.jpg"
+        },
+        {
+          "name": "Estelle Sing Fat",
+          "role": "Director of Events",
+          "email": "sing1304@mylaurier.ca"
+        },
+        {
+          "name": "Ethan Niu",
+          "role": "Director of Events",
+          "email": "niux5671@mylaurier.ca",
+          "photo": "2026-27/EthanNiu.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Marketing",
+      "members": [
+        {
+          "name": "Anoushka Mahindru",
+          "role": "VP of Marketing",
+          "email": "mahi8412@mylaurier.ca",
+          "photo": "2026-27/AnoushkaMahindru.jpg"
+        },
+        {
+          "name": "Abby Soh",
+          "role": "Director of Marketing",
+          "email": "sohx0603@mylaurier.ca",
+          "photo": "2026-27/AbbySoh.jpg"
+        },
+        {
+          "name": "Katie Lee",
+          "role": "Director of Marketing",
+          "email": "leex4060@mylaurier.ca",
+          "photo": "2026-27/KatieLee.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Software",
+      "members": [
+        {
+          "name": "Emaad Qazi",
+          "role": "VP of Software Development",
+          "program": "4th Year BBA/BSc",
+          "email": "qazi5574@mylaurier.ca",
+          "photo": "2026-27/EmaadQazi.png",
+          "linkedin": "https://www.linkedin.com/in/emaadqazi/"
+        }
+      ]
+    },
+    {
+      "name": "Finance",
+      "members": [
+        {
+          "name": "Quinn James",
+          "role": "VP of Finance",
+          "email": "jame2638@mylaurier.ca",
+          "photo": "2026-27/QuinnJames.jpg"
+        }
+      ]
+    }
+  ]
+}

@@ -15,6 +15,8 @@ const member = z.object({
   // Filename inside src/assets/team/, e.g. "2026-27/JaneDoe.jpg". Leave out to show initials.
   photo: z.string().optional(),
   linkedin: z.url().optional(),
+  // Shown as a mail link on the member's card for inquiries.
+  email: z.email().optional(),
   // "hiring" renders an open-position card instead of a person.
   status: z.enum(['active', 'hiring']).default('active'),
   applyUrl: z.url().optional(),
