@@ -75,3 +75,12 @@ Production currently shows "nothing scheduled / first articles on the way" empty
   - Katie's photo came as a circle on white. It was cropped to the largest 4:5 box inside the circle, so it's small (244×306) and a full-size original would be sharper.
 - **Member emails are shown on cards** (optional `email` field in the team schema, rendered as a `mailto:` link under each person) so visitors can reach the exec for inquiries. Emails come from `members/list.md`.
 - `members/` (the raw list and photos) is intentionally left **untracked**.
+
+### Team page carousel (branch `feature/meet-the-team`)
+- `/team` now has a **Carousel / List** toggle. Carousel is the default, and the choice is remembered in localStorage and applied before first paint by an inline script, so there's no flash.
+- **Carousel:** one portfolio per slide, using native scroll-snap so phones swipe. Prev/next arrows, portfolio chips that act as tabs (with the active chip highlighted), ←/→ keys, and `/team#events` opens on that slide. The track's height follows the visible slide.
+  - Below 768px each member becomes a compact row (thumbnail + text) listed vertically, and the next slide peeks in from the edge.
+  - From 768px up, slides show the usual card grid.
+- **List:** the original stacked layout, unchanged.
+- One set of markup serves both views. CSS in `Roster.astro` switches on `.team[data-view]`, and `MemberCard.astro` has `m-*` hook classes for the compact layout.
+- Checked in Playwright on iPhone SE, iPhone 13, iPad Mini and 1440px desktop: swipe, arrows, tabs, hash, persistence, no horizontal overflow, no console errors.
