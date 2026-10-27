@@ -26,6 +26,34 @@ export async function getNews() {
   return all.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 }
 
+/** The shape NewsItem renders: hand-picked links and weekly picks both fit it. */
+export type NewsLike = {
+  id: string;
+  data: {
+    title: string;
+    url: string;
+    source: string;
+    date: Date;
+    tag: CollectionEntry<'news'>['data']['tag'];
+    summary?: string;
+    takeaway?: string;
+    draft?: boolean;
+  };
+};
+
+/** Automated weekly picks, newest week first, each week in its published order. */
+export async function getWeeklyNews() {
+  const all = (await getCollection('weekly')).sort(
+    (a, b) => b.data.week.valueOf() - a.data.week.valueOf() || a.data.rank - b.data.rank,
+  );
+  const week = all[0]?.data.week;
+  const isLatest = (e: CollectionEntry<'weekly'>) => e.data.week.valueOf() === week?.valueOf();
+  const thisWeek = all.filter(isLatest);
+  // `updated` is when the script last ran, which can be later than the week's Monday.
+  const updated = thisWeek.length ? new Date(Math.max(...thisWeek.map((e) => e.data.published.valueOf()))) : undefined;
+  return { all, week, updated, thisWeek, earlier: all.filter((e) => !isLatest(e)) };
+}
+
 export async function getRosters() {
   const all = await getCollection('team');
   // Newest term first: "2026-27" sorts after "2025-26".

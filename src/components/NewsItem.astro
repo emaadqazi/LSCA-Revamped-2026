@@ -1,8 +1,8 @@
 ---
-import type { CollectionEntry } from 'astro:content';
+import type { NewsLike } from '../lib/content';
 import { shortDate } from '../lib/dates';
 
-interface Props { item: CollectionEntry<'news'>; compact?: boolean }
+interface Props { item: NewsLike; compact?: boolean }
 const { item, compact = false } = Astro.props;
 const n = item.data;
 ---
@@ -19,5 +19,6 @@ const n = item.data;
     </a>
     <svg class="ml-1 inline h-3.5 w-3.5 -translate-y-px text-harbour/50" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M6 3h7v7M13 3 4 12" /></svg>
   </h3>
+  {n.summary && <p class:list={['mt-2 max-w-prose text-harbour/85', compact ? 'line-clamp-2 text-[0.9rem]' : 'text-[0.95rem]']}>{n.summary}</p>}
   {!compact && n.takeaway && <p class="mt-2 max-w-prose text-[0.95rem] text-harbour/80"><span class="font-semibold">Why it matters:</span> {n.takeaway}</p>}
 </li>

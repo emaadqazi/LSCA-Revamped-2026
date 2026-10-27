@@ -113,3 +113,10 @@ Brief: find the gaps, then revise the whole site so it has a "wow" factor with s
 - Review on a real phone; decide whether the belt speed (60 s per loop) and the journey's per-stop height (34vh on desktop) feel right.
 - `npm run check` needs `@astrojs/check` and `typescript` as devDependencies; they were not added this session.
 - Replace the draft example content before launch (unchanged from Session 2).
+
+### Also this session: automatic weekly industry news
+- `scripts/fetch-news.mjs` (Node built-ins only) + `.github/workflows/news.yml` (Mondays 11:00 UTC, or Run workflow). Reads seven RSS feeds, dedupes, drops sponsored/webinar items, sends up to 60 candidates to Claude (`claude-sonnet-5` by default) via a forced-shape tool call, writes five picks with summary, takeaway and tag to `src/content/news/weekly.json`, keyed by the Monday of the week so re-runs replace rather than append. Six-month archive. `--dry-run` and `--no-ai` (heuristic picks, publisher blurbs) for local use.
+- New `weekly` collection; `getWeeklyNews()` returns `thisWeek`, `earlier`, `week` and `updated` (actual run time). `/news` shows "This week in supply chain" with a "Last updated" tag, then earlier weeks by month, then "Picked by the team" (the hand-curated `links.json`). The home panel shows this week's five with an "Updated" chip and falls back to hand-picked links when there are none.
+- The workflow commits with the Actions token, which doesn't trigger `on: push`, so it dispatches `deploy.yml` explicitly. Needs the `ANTHROPIC_API_KEY` repo secret.
+- `weekly.json` is seeded with a `--no-ai` run from 2026-10-27 (`method: "heuristic"`, publishers' blurbs, no takeaways). The first real run replaces it. The page's footer line says which kind it is.
+- Dev gotcha: after adding a collection or changing its schema while `astro dev` is running, restart dev; the content store does not recover from a failed sync on its own.

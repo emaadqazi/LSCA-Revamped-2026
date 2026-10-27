@@ -64,6 +64,10 @@ const articles = defineCollection({
   }),
 });
 
+// Keep in sync with TAGS in scripts/fetch-news.mjs.
+const newsTag = z.enum(['Logistics', 'Procurement', 'Trade & policy', 'Technology', 'Careers', 'Sustainability']);
+
+// Links the team adds by hand (see README).
 const news = defineCollection({
   loader: file('./src/content/news/links.json'),
   schema: z.object({
@@ -71,10 +75,29 @@ const news = defineCollection({
     url: z.url(),
     source: z.string(),
     date: calendarDate,
-    tag: z.enum(['Logistics', 'Procurement', 'Trade & policy', 'Technology', 'Careers', 'Sustainability']),
+    tag: newsTag,
     takeaway: z.string().optional(),
     draft: z.boolean().default(false),
   }),
 });
 
-export const collections = { team, events, articles, news };
+// Five stories a week, written by scripts/fetch-news.mjs every Monday. Safe to edit by hand:
+// the script only replaces entries for the current week.
+const weekly = defineCollection({
+  loader: file('./src/content/news/weekly.json'),
+  schema: z.object({
+    week: calendarDate, // the Monday this batch belongs to (groups the archive)
+    published: z.coerce.date(), // when the script actually ran
+    rank: z.number().int(),
+    title: z.string(),
+    url: z.url(),
+    source: z.string(),
+    date: calendarDate, // when the publisher ran the story
+    tag: newsTag,
+    summary: z.string(),
+    takeaway: z.string().optional(),
+    method: z.enum(['ai', 'heuristic']).optional(),
+  }),
+});
+
+export const collections = { team, events, articles, news, weekly };

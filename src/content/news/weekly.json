@@ -1,0 +1,67 @@
+[
+  {
+    "id": "2026-10-26-1-the-case-for-renting-the-box-and-buying-the-truck",
+    "week": "2026-10-26",
+    "published": "2026-10-27T17:17:30.545Z",
+    "rank": 1,
+    "title": "The Case For Renting The Box And Buying The Truck",
+    "url": "https://www.freightwaves.com/news/the-case-for-renting-the-box-and-buying-the-truck",
+    "source": "FreightWaves",
+    "date": "2026-10-27T16:21:34.000Z",
+    "tag": "Logistics",
+    "summary": "For a small carrier, the choice of whether to own a trailer, finance one, run power only, or rent by the day looks like a simple equipment question, but it is really a business decision with a cost structure attached to every option, and getting that math wrong is one…",
+    "method": "heuristic"
+  },
+  {
+    "id": "2026-10-26-2-knight-swift-ceo-says-cdl-crackdown-could-fuel-lasting-truck",
+    "week": "2026-10-26",
+    "published": "2026-10-27T17:17:30.545Z",
+    "rank": 2,
+    "title": "Knight-Swift CEO says CDL crackdown could fuel lasting trucking recovery",
+    "url": "https://www.freightwaves.com/news/knight-swift-ceo-says-cdl-crackdown-could-fuel-lasting-trucking-recovery",
+    "source": "FreightWaves",
+    "date": "2026-10-27T15:57:36.000Z",
+    "tag": "Technology",
+    "summary": "Knight-Swift CEO Adam Miller said more restrictive broker-carrier relationships could reshape competition in trucking by favoring established fleets with stronger safety and compliance records",
+    "method": "heuristic"
+  },
+  {
+    "id": "2026-10-26-3-strike-threat-looms-at-eight-los-angeles-long-beach-port-ter",
+    "week": "2026-10-26",
+    "published": "2026-10-27T17:17:30.545Z",
+    "rank": 3,
+    "title": "Strike Threat Looms at Eight Los Angeles, Long Beach Port Terminals",
+    "url": "https://gcaptain.com/strike-threat-looms-at-eight-los-angeles-long-beach-port-terminals/",
+    "source": "gCaptain",
+    "date": "2026-10-27T15:52:29.000Z",
+    "tag": "Careers",
+    "summary": "A labor dispute involving port watchmen could disrupt operations at eight marine terminals in the ports of Los Angeles and Long Beach as early as November 1, just weeks after...",
+    "method": "heuristic"
+  },
+  {
+    "id": "2026-10-26-4-u-s-changes-canadian-goods-facing-additional-50-per-cent-tar",
+    "week": "2026-10-26",
+    "published": "2026-10-27T17:17:30.545Z",
+    "rank": 4,
+    "title": "U.S. changes Canadian goods facing additional 50 per cent tariff",
+    "url": "https://www.insidelogistics.ca/import-export-trade/import-export-trade-tariffs/u-s-changes-canadian-goods-facing-additional-50-per-cent-tariff/",
+    "source": "Inside Logistics",
+    "date": "2026-10-27T15:39:42.000Z",
+    "tag": "Trade & policy",
+    "summary": "U.S. President Donald Trump is removing some Canadian wood, paper and machinery products from an additional 50 per cent tariff while extending the charge to certain valves, carpets and waste products.",
+    "method": "heuristic"
+  },
+  {
+    "id": "2026-10-26-5-american-steel-dominates-canadian-imports-trade-data-shows",
+    "week": "2026-10-26",
+    "published": "2026-10-27T17:17:30.545Z",
+    "rank": 5,
+    "title": "American steel dominates Canadian imports, trade data shows",
+    "url": "https://www.supplypro.ca/american-steel-dominates-canadian-imports-trade-data-shows/",
+    "source": "Supply Professional",
+    "date": "2026-10-27T14:29:33.000Z",
+    "tag": "Procurement",
+    "summary": "Federal trade figures show American steel makes up more than half of Canada’s imports of galvanized and coated steel, complicating Cleveland-Cliffs’ argument that an influx of cheap overseas steel is one of the top causes of Stelco layoffs.",
+    "method": "heuristic"
+  }
+]

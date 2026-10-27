@@ -9,13 +9,16 @@ import SpeakerBelt from '../components/SpeakerBelt.astro';
 import EventRow from '../components/EventRow.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import NewsItem from '../components/NewsItem.astro';
-import { getEvents, getArticles, getNews, getRosters } from '../lib/content';
+import { getEvents, getArticles, getNews, getWeeklyNews, getRosters } from '../lib/content';
 import { teamPhoto } from '../lib/images';
+import { shortDate } from '../lib/dates';
 import { SITE } from '../lib/site';
 
 const { upcoming } = await getEvents();
 const articles = (await getArticles()).slice(0, 2);
-const news = (await getNews()).slice(0, 4);
+// This week's five automated picks; before the first run, fall back to hand-picked links.
+const { thisWeek, updated } = await getWeeklyNews();
+const news = thisWeek.length ? thisWeek : (await getNews()).slice(0, 4);
 const [roster] = await getRosters();
 const members = roster.data.portfolios.flatMap((p) => p.members).filter((m) => m.status === 'active');
 const faces = members.map((m) => ({ ...m, img: teamPhoto(m.photo) })).filter((m) => m.img).slice(0, 8);
@@ -91,9 +94,17 @@ const facts = [
           <a href="/news" class="link font-semibold">More reading</a>
         </div>
         {news.length ? (
-          <ul class="mt-5 divide-y divide-mist-deep" data-reveal="rise" style="--i:1">
-            {news.map((n) => <NewsItem item={n} compact />)}
-          </ul>
+          <div data-reveal="rise" style="--i:1">
+            <ul class="mt-5 divide-y divide-mist-deep">
+              {news.map((n) => <NewsItem item={n} compact />)}
+            </ul>
+            {thisWeek.length > 0 && updated && (
+              <p class="mt-4 inline-flex items-center gap-2 rounded-full border border-mist-deep bg-mist px-3 py-1.5 text-sm text-harbour/75">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="6.25" /><path d="M8 4.5V8l2.5 1.5" /></svg>
+                Updated <time datetime={updated.toISOString()}>{shortDate(updated)}</time>, five new stories every Monday
+              </p>
+            )}
+          </div>
         ) : (
           <p class="mt-6 text-harbour/80">Links to supply chain stories we're following will appear here.</p>
         )}
