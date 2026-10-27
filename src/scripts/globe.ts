@@ -255,7 +255,7 @@ export function mountGlobe(root: HTMLElement, landDots: number[]) {
   globe.add(new Points(packetGeo, packetMat));
 
   const samplePath = (pts: Vector3[], t: number, out: Vector3) => {
-    const f = t * (pts.length - 1);
+    const f = Math.min(1, Math.max(0, t)) * (pts.length - 1);
     const i = Math.floor(f);
     return out.copy(pts[i]).lerp(pts[Math.min(i + 1, pts.length - 1)], f - i);
   };
@@ -319,7 +319,9 @@ export function mountGlobe(root: HTMLElement, landDots: number[]) {
   const homeWorld = new Vector3();
 
   function frame(now: number) {
-    const t = reduced ? 10 : (now - start) / 1000;
+    // The first rAF timestamp can precede `start` by a few ms; a negative t would put a package
+    // off the end of its route and throw, which stops the loop for good.
+    const t = reduced ? 10 : Math.max(0, (now - start) / 1000);
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
 
