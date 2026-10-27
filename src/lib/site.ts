@@ -21,3 +21,6 @@ export const NAV = [
   { href: '/articles', label: 'Articles' },
   { href: '/news', label: 'Industry news' },
 ];
+
+// The one call to action that follows visitors around the site.
+export const CTA = { href: '/get-involved', label: 'Get involved' };

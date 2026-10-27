@@ -2,8 +2,8 @@
 import type { CollectionEntry } from 'astro:content';
 import { day, monthShort, weekdayShort, timeRange, status } from '../lib/dates';
 
-interface Props { event: CollectionEntry<'events'>; tone?: 'light' | 'muted' }
-const { event, tone = 'light' } = Astro.props;
+interface Props { event: CollectionEntry<'events'>; tone?: 'light' | 'muted'; index?: number }
+const { event, tone = 'light', index } = Astro.props;
 const d = event.data;
 const st = status(d.start, d.end);
 ---
@@ -13,6 +13,8 @@ const st = status(d.start, d.end);
     tone === 'muted' ? 'border-mist-deep/60' : 'border-mist-deep hover:border-harbour/50',
   ]}
   data-event-type={d.type}
+  data-reveal={index === undefined ? undefined : 'rise'}
+  style={index === undefined ? undefined : `--i:${Math.min(index, 3)}`}
 >
   <!-- Date stub: the tear-off end of a shipping label. -->
   <div class:list={['flex flex-col items-center justify-center px-2 py-4 text-center', st === 'past' ? 'bg-mist text-harbour/70' : 'bg-harbour text-paper']}>
@@ -38,5 +40,6 @@ const st = status(d.start, d.end);
       <span>{d.location}</span>
     </p>
     {tone !== 'muted' && <p class="mt-3 max-w-2xl text-[0.95rem] text-harbour/85">{d.summary}</p>}
+    {tone !== 'muted' && <span class="barcode absolute bottom-4 right-5 hidden h-7 w-24 text-harbour/25 sm:block" aria-hidden="true"></span>}
   </div>
 </article>

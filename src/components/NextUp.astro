@@ -1,0 +1,37 @@
+---
+// Pre-footer band: the next event on the calendar, or where to look when there is none.
+import { getEvents } from '../lib/content';
+import { longDate, timeRange } from '../lib/dates';
+import { CTA, SITE } from '../lib/site';
+
+const { upcoming } = await getEvents();
+const next = upcoming[0];
+// No point pointing at the page the visitor is already on.
+const showCta = Astro.url.pathname.replace(/\/$/, '') !== CTA.href;
+---
+<section class="bg-harbour text-paper" aria-labelledby="next-h">
+  <div class="wrap">
+    <div class="route-line text-mist" aria-hidden="true"></div>
+    <div class="grid items-center gap-8 py-14 md:grid-cols-12 md:py-16">
+      <div class="md:col-span-8">
+        <p class="data text-[0.95rem] text-mist/70">{next ? 'Next on the calendar' : 'Calendar'}</p>
+        <h2 id="next-h" class="heading mt-2 text-[clamp(1.6rem,3.2vw,2.4rem)]" data-reveal>
+          {next ? next.data.title : 'Nothing is scheduled yet'}
+        </h2>
+        <p class="mt-3 max-w-2xl text-mist/80" data-reveal style="--i:1">
+          {next
+            ? `${longDate(next.data.start)}, ${timeRange(next.data.start, next.data.end, next.data.allDay)}. ${next.data.location}.`
+            : 'New events are announced on Instagram first. Subscribe to the calendar and they will appear on their own.'}
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-3 md:col-span-4 md:justify-end" data-reveal="rise" style="--i:2">
+        {next ? (
+          <a href={`/events/${next.id}`} class="btn btn-signal">Event details</a>
+        ) : (
+          <a href={SITE.social.instagram} class="btn btn-signal" target="_blank" rel="noopener">Follow on Instagram</a>
+        )}
+        {showCta && <a href={CTA.href} class="btn btn-outline-light">{CTA.label}</a>}
+      </div>
+    </div>
+  </div>
+</section>

@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import Roster from '../../components/Roster.astro';
+import NextUp from '../../components/NextUp.astro';
 import { getRosters } from '../../lib/content';
 
 const rosters = await getRosters();
@@ -15,4 +16,5 @@ const count = current.data.portfolios.flatMap((p) => p.members).filter((m) => m.
     intro={`${count} students across ${current.data.portfolios.length} portfolios, studying business, economics, computer science and more. This is the ${current.data.label} executive team.`}
   />
   <Roster roster={current} terms={terms} />
+  <NextUp />
 </Base>

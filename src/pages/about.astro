@@ -1,7 +1,19 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
-import { SITE } from '../lib/site';
+import NextUp from '../components/NextUp.astro';
+import { speakerPhoto } from '../lib/images';
+import { SITE, CTA } from '../lib/site';
+
+// The five stages every product passes through. Each one is something LSCA teaches or shows.
+const stages = [
+  { name: 'Plan', body: 'Forecast demand, decide what to make and how much to hold.' },
+  { name: 'Source', body: 'Find suppliers, negotiate, and manage the risk of depending on them.' },
+  { name: 'Make', body: 'Turn materials into product on a schedule, at a quality, at a cost.' },
+  { name: 'Move', body: 'Warehouses, trucks, ships, ports and the last kilometre to the door.' },
+  { name: 'Deliver', body: 'Get it into someone\u2019s hands, then handle what comes back.' },
+];
 
 // What each portfolio does. Keep in sync with the portfolio names in src/content/team/.
 const portfolios = [
@@ -13,42 +25,102 @@ const portfolios = [
   { name: 'Finance', body: 'Manages the club budget, sponsorship funds and reimbursements.' },
   { name: 'Admin', body: 'Keeps the team running: internal operations, recruitment, and a first-year representative who speaks for new students.' },
 ];
+
+const advisor = speakerPhoto('Micheal-Haughton.jpeg');
 ---
 <Base title="About" description="About the Laurier Supply Chain Association, the official supply chain club at Wilfrid Laurier University.">
   <PageHeader title="About LSCA" intro={`Founded in 2012, the Laurier Supply Chain Association is the official supply chain club at Wilfrid Laurier University and part of the Lazaridis Students' Society.`} />
 
-  <section class="wrap grid gap-10 py-14 md:py-20 lg:grid-cols-12">
-    <h2 class="heading text-[clamp(1.6rem,3vw,2.2rem)] lg:col-span-4">What we do</h2>
-    <div class="max-w-2xl space-y-5 text-lg text-harbour/90 lg:col-span-8">
-      <p>Supply chain is how a product gets from raw material to someone's hands: planning, sourcing, manufacturing, warehousing and transportation. Every industry depends on it, and most students don't see it until something breaks.</p>
-      <p>We exist to show Laurier students what a career in supply chain looks like, and to put them in the room with people already doing the work. That means speaker panels with industry professionals, case competitions alongside the Supply Chain Department, hands-on workshops and socials that make the community feel small.</p>
-      <p>Since 2012 we've reached more than 3,000 students. You don't need to be a supply chain major to join; most of our members found the field through one of our events.</p>
+  <!-- The five stages, laid out as stops on one route. -->
+  <section class="wrap py-14 md:py-20" aria-labelledby="chain-h">
+    <div class="max-w-2xl">
+      <h2 id="chain-h" class="heading text-[clamp(1.6rem,3vw,2.2rem)]" data-reveal>Supply chain is how a product gets from raw material to someone's hands</h2>
+      <p class="mt-4 text-lg text-harbour/80" data-reveal style="--i:1">Every industry depends on it, and most students don't see it until something breaks. These are the five stages, and every one of them is a career.</p>
     </div>
+    <ol class="stages mt-10 grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-5">
+      {stages.map((s, i) => (
+        <li class="stage relative pt-6" data-reveal="rise" style={`--i:${i + 1}`}>
+          <span class="stage-node" aria-hidden="true"></span>
+          <h3 class="heading text-xl">{s.name}</h3>
+          <p class="mt-2 text-[0.95rem] text-harbour/80">{s.body}</p>
+        </li>
+      ))}
+    </ol>
   </section>
 
   <section class="border-y border-mist-deep/70 bg-mist py-14 md:py-20">
     <div class="wrap grid gap-10 lg:grid-cols-12">
-      <div class="lg:col-span-4">
-        <h2 class="heading text-[clamp(1.6rem,3vw,2.2rem)]">How the team is organized</h2>
-        <p class="mt-4 text-harbour/80">Each portfolio is led by a VP and supported by directors. We hire new directors every fall.</p>
-        <a href="/team" class="btn btn-ghost mt-6">Meet the team</a>
+      <h2 class="heading text-[clamp(1.6rem,3vw,2.2rem)] lg:col-span-4" data-reveal>What we do</h2>
+      <div class="max-w-2xl space-y-5 text-lg text-harbour/90 lg:col-span-8" data-reveal="rise" style="--i:1">
+        <p>We exist to show Laurier students what a career in supply chain looks like, and to put them in the room with people already doing the work. That means speaker panels with industry professionals, case competitions alongside the Supply Chain Department, hands-on workshops and socials that make the community feel small.</p>
+        <p>Since 2012 we've reached more than 3,000 students. You don't need to be a supply chain major to join; most of our members found the field through one of our events.</p>
+        <a href={CTA.href} class="btn btn-primary mt-2">{CTA.label}</a>
       </div>
-      <dl class="grid gap-px overflow-hidden rounded-[var(--radius-link)] border border-mist-deep bg-mist-deep sm:grid-cols-2 lg:col-span-8">
-        {portfolios.map((p) => (
-          <div class="bg-paper p-5 sm:p-6">
-            <dt class="heading text-lg">{p.name}</dt>
-            <dd class="mt-1.5 text-harbour/80">{p.body}</dd>
-          </div>
-        ))}
-      </dl>
     </div>
   </section>
 
   <section class="wrap grid gap-10 py-14 md:py-20 lg:grid-cols-12">
-    <h2 class="heading text-[clamp(1.6rem,3vw,2.2rem)] lg:col-span-4">Faculty advisor</h2>
-    <div class="max-w-2xl text-lg text-harbour/90 lg:col-span-8">
-      <p>Dr. Michael Haughton, Program Director of Supply Chain Management at Laurier, advises the club and partners with us on academic events like the US Tariffs Case Competition.</p>
-      <p class="mt-8 text-base text-harbour/80">Questions, partnerships or speaking opportunities: <a class="link font-semibold" href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+    <div class="lg:col-span-4">
+      <h2 class="heading text-[clamp(1.6rem,3vw,2.2rem)]" data-reveal>How the team is organized</h2>
+      <p class="mt-4 text-harbour/80" data-reveal style="--i:1">Each portfolio is led by a VP and supported by directors. We hire new directors every fall.</p>
+      <a href="/team" class="btn btn-ghost mt-6" data-reveal="rise" style="--i:2">Meet the team</a>
+    </div>
+    <dl class="grid gap-px overflow-hidden rounded-[var(--radius-link)] border border-mist-deep bg-mist-deep sm:grid-cols-2 lg:col-span-8" data-reveal="rise" style="--i:1">
+      {portfolios.map((p) => (
+        <div class="bg-paper p-5 sm:p-6">
+          <dt class="heading text-lg">{p.name}</dt>
+          <dd class="mt-1.5 text-harbour/80">{p.body}</dd>
+        </div>
+      ))}
+      <div class="flex items-center bg-mist p-5 sm:p-6">
+        <a href={CTA.href} class="link font-semibold">Want to join one of these? Here's how.</a>
+      </div>
+    </dl>
+  </section>
+
+  <section class="border-t border-mist-deep/70 bg-mist py-14 md:py-20">
+    <div class="wrap grid gap-10 lg:grid-cols-12">
+      <h2 class="heading text-[clamp(1.6rem,3vw,2.2rem)] lg:col-span-4" data-reveal>Faculty advisor</h2>
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-start lg:col-span-8" data-reveal="rise" style="--i:1">
+        {advisor && (
+          <div class="h-28 w-28 shrink-0 overflow-hidden rounded-full bg-mist-deep">
+            <Image src={advisor} alt="Dr. Michael Haughton" width={224} height={224} class="h-full w-full object-cover" />
+          </div>
+        )}
+        <div class="max-w-2xl text-lg text-harbour/90">
+          <p><span class="font-semibold text-harbour">Dr. Michael Haughton</span>, Program Director of Supply Chain Management at Laurier, advises the club and partners with us on academic events like the US Tariffs Case Competition.</p>
+          <p class="mt-6 text-base text-harbour/80">Questions, partnerships or speaking opportunities: <a class="link font-semibold" href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+        </div>
+      </div>
     </div>
   </section>
+
+  <NextUp />
 </Base>
+
+<style>
+  /* One dashed route runs behind the five stages; each stage is a stop on it. */
+  .stages { position: relative; }
+  .stage::before {
+    content: "";
+    position: absolute;
+    top: 0.45rem;
+    left: 0.5rem;
+    right: -1.5rem;
+    border-top: 2px dashed var(--color-mist-deep);
+  }
+  .stage:last-child::before { display: none; }
+  .stage-node {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 999px;
+    border: 2px solid var(--color-signal);
+    background: var(--color-paper);
+  }
+  .stage:last-child .stage-node { background: var(--color-signal); }
+  @media (max-width: 639px) { .stage::before { display: none; } }
+  @media (min-width: 640px) and (max-width: 1023px) { .stage:nth-child(2n)::before, .stage:nth-child(4)::before { display: none; } }
+</style>

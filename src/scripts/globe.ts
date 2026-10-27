@@ -223,7 +223,7 @@ export function mountGlobe(root: HTMLElement, landDots: number[]) {
     geo.setDrawRange(0, reduced ? pts.length : 0);
     const line = new Line(geo, arcMat(a === 'waterloo' ? 0.9 : 0.55));
     globe.add(line);
-    return { pts, geo, start: 1.5 + i * 0.07, speed: 0.12 + Math.random() * 0.1, offset: Math.random(), dir: i % 2 ? 1 : -1 };
+    return { a, b, pts, geo, start: 1.5 + i * 0.07, speed: 0.12 + Math.random() * 0.1, offset: Math.random(), dir: i % 2 ? 1 : -1, prev: [0, 0] };
   });
   const packetPos = new Float32Array(routes.length * 2 * 3);
   const packetGeo = new BufferGeometry();
@@ -264,7 +264,9 @@ export function mountGlobe(root: HTMLElement, landDots: number[]) {
   const resize = () => {
     const { width, height } = canvasHost.getBoundingClientRect();
     if (!width || !height) return;
-    renderer.setSize(width, height, false);
+    // Let three.js set the canvas's CSS size too, otherwise on 2x and 3x screens the canvas
+    // displays at its device-pixel size and spills out of its container.
+    renderer.setSize(width, height);
     camera.aspect = width / height;
     // Keep the whole globe in frame on tall, narrow containers.
     camera.position.z = camera.aspect < 1 ? 4.1 / camera.aspect : 4.1;
@@ -343,8 +345,14 @@ export function mountGlobe(root: HTMLElement, landDots: number[]) {
       const p = easeOut((t - r.start) / 0.9);
       r.geo.setDrawRange(0, Math.ceil(p * r.pts.length));
       for (let k = 0; k < 2; k++) {
-        let u = (r.offset + k * 0.5 + t * r.speed) % 1;
-        if (r.dir < 0) u = 1 - u;
+        const raw = (r.offset + k * 0.5 + t * r.speed) % 1;
+        // The counter wrapping means a package just reached the end of its route.
+        if (raw < r.prev[k] && t > 3.5 && !reduced) {
+          const [from, to] = r.dir > 0 ? [r.a, r.b] : [r.b, r.a];
+          root.dispatchEvent(new CustomEvent('lsca:arrival', { detail: { from: HUBS[from].name, to: HUBS[to].name } }));
+        }
+        r.prev[k] = raw;
+        const u = r.dir < 0 ? 1 - raw : raw;
         samplePath(r.pts, u, tmp);
         packetPos.set([tmp.x, tmp.y, tmp.z], (i * 2 + k) * 3);
       }

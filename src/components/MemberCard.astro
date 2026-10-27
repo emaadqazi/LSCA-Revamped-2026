@@ -4,12 +4,15 @@ import { teamPhoto, initials } from '../lib/images';
 
 interface Props {
   member: { name: string; role: string; program?: string; photo?: string; linkedin?: string; email?: string; status: 'active' | 'hiring'; applyUrl?: string };
+  index?: number;
 }
-const { member: m } = Astro.props;
+const { member: m, index = 0 } = Astro.props;
 const img = teamPhoto(m.photo);
+// Cards in a row rise together, each row a beat after the last.
+const stagger = index % 4;
 ---
 {m.status === 'hiring' ? (
-  <li class="flex flex-col">
+  <li class="flex flex-col" data-reveal="rise" style={`--i:${stagger}`}>
     <div class="relative grid aspect-[4/5] place-items-center overflow-hidden rounded-[var(--radius-link)] border-2 border-dashed border-mist-deep bg-paper p-4 text-center">
       <div>
         <p class="heading text-lg">Position open</p>
@@ -21,7 +24,7 @@ const img = teamPhoto(m.photo);
     <p class="text-sm text-harbour/70">Applications open</p>
   </li>
 ) : (
-  <li class="group flex flex-col">
+  <li class="group flex flex-col" data-reveal="rise" style={`--i:${stagger}`}>
     <div class="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-link)] bg-mist">
       {img ? (
         <Image

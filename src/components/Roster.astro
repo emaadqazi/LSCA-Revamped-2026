@@ -25,10 +25,10 @@ const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
   {roster.data.portfolios.map((p) => (
     <section id={slug(p.name)} class="grid gap-6 py-10 lg:grid-cols-12 lg:gap-10" aria-labelledby={`${slug(p.name)}-h`}>
       <div class="lg:col-span-3">
-        <h2 id={`${slug(p.name)}-h`} class="heading text-2xl lg:sticky lg:top-36 lg:text-[1.75rem]">{p.name}</h2>
+        <h2 id={`${slug(p.name)}-h`} class="heading text-2xl lg:sticky lg:top-36 lg:text-[1.75rem]" data-reveal>{p.name}</h2>
       </div>
       <ul class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:col-span-9 lg:grid-cols-4">
-        {p.members.map((m) => <MemberCard member={m} />)}
+        {p.members.map((m, i) => <MemberCard member={m} index={i} />)}
       </ul>
     </section>
   ))}

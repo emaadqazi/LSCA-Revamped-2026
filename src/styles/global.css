@@ -10,12 +10,22 @@
   --color-signal: #0a9cc0;     /* light link — accents on dark, large display */
   --color-signal-ink: #07738e;/* light link darkened for AA text on light bg */
   --color-deep: #062a36;       /* dark sections, footer */
+  --color-night: #041c24;      /* deepest ground, behind the hero and footer */
+  --color-signal-bright: #3cc4e6; /* glow on dark backgrounds only */
   --color-paper: #f8fbfd;      /* page background */
 
   --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
 
   --radius-link: 1.25rem;      /* echoes the rounded link corners */
+
+  --ease-route: cubic-bezier(.2, .8, .2, 1);   /* arrivals: fast out, soft landing */
+  --ease-depart: cubic-bezier(.7, 0, .2, 1);   /* departures and curtains */
 }
+
+/* Cross-document page transitions: the header stays put, the page content crossfades. */
+@view-transition { navigation: auto; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 260ms; }
+@media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
 
 @layer base {
   html {
@@ -96,6 +106,8 @@
   .btn-ghost:hover { background: var(--color-harbour); color: var(--color-paper); }
   .btn-signal { background: var(--color-signal); color: var(--color-deep); }
   .btn-signal:hover { background: var(--color-paper); }
+  .btn-outline-light { border: 1.5px solid color-mix(in srgb, var(--color-paper) 45%, transparent); color: var(--color-paper); }
+  .btn-outline-light:hover { border-color: var(--color-paper); background: color-mix(in srgb, var(--color-paper) 10%, transparent); }
 
   .chip {
     display: inline-flex;
@@ -113,6 +125,80 @@
     border-color: var(--color-harbour);
     color: var(--color-paper);
   }
+
+  /* Decorative barcode stripes for shipping-label details. Always aria-hidden. */
+  .barcode {
+    height: 100%;
+    background: repeating-linear-gradient(
+      90deg,
+      currentColor 0 2px, transparent 2px 4px,
+      currentColor 4px 5px, transparent 5px 8px,
+      currentColor 8px 11px, transparent 11px 13px,
+      currentColor 13px 14px, transparent 14px 18px,
+      currentColor 18px 20px, transparent 20px 21px,
+      currentColor 21px 24px, transparent 24px 27px
+    );
+  }
+
+  /* A dashed route with one package travelling along it. Used as a quiet section divider. */
+  .route-line {
+    position: relative;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, currentColor 0 6px, transparent 6px 12px);
+    opacity: 0.35;
+  }
+  .route-line::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--color-signal);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-signal) 20%, transparent);
+    translate: -50% -50%;
+    animation: route-travel 9s linear infinite;
+  }
+  @keyframes route-travel { to { left: 100%; } }
+}
+
+/* Dotted leaders between a label and its value, like a line on a waybill. A utility so it can be
+   applied per breakpoint (md:leader) where a row has room. */
+@utility leader {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.6rem;
+  &::before {
+    content: "";
+    order: 2;
+    flex: 1;
+    min-width: 1.5rem;
+    border-bottom: 2px dotted color-mix(in srgb, currentColor 35%, transparent);
+    transform: translateY(-0.3em);
+  }
+  & > :last-child { order: 3; }
+}
+
+/*
+ * Motion system. Elements marked data-reveal are hidden until the motion script adds .is-in,
+ * then wipe in from the left, the direction goods travel. Only when JS is running (html.js)
+ * and motion is allowed, so content is never hidden from anyone. The script removes the
+ * attribute once the element has landed.
+ *   data-reveal         wipe from the left
+ *   data-reveal="rise"  fade and rise, for blocks where a wipe would clip (photos, outlines)
+ *   style="--i: n"      staggers siblings by 70ms each
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    --reveal-delay: calc(var(--i, 0) * 70ms);
+    transition: clip-path 800ms var(--ease-route) var(--reveal-delay), opacity 400ms linear var(--reveal-delay), transform 800ms var(--ease-route) var(--reveal-delay);
+  }
+  .js [data-reveal]:not(.is-in) { clip-path: inset(-0.5rem 100% -0.5rem -0.5rem); opacity: 0; }
+  .js [data-reveal].is-in { clip-path: inset(-0.5rem -0.5rem -0.5rem -0.5rem); opacity: 1; }
+  .js [data-reveal="rise"]:not(.is-in) { clip-path: none; transform: translateY(18px); }
+  .js [data-reveal="rise"].is-in { clip-path: none; transform: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

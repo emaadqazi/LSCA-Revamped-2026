@@ -1,0 +1,16 @@
+---
+// A strip of facts set like the lines on a waybill: label, dotted leader, value.
+// Values that are plain numbers count up when they scroll into view (see scripts/motion.ts).
+interface Props { rows: { label: string; value: string; count?: boolean }[]; label?: string }
+const { rows, label = 'LSCA in numbers' } = Astro.props;
+---
+<section class="border-b border-dashed border-mist-deep bg-mist" aria-label={label}>
+  <dl class="wrap grid grid-cols-2 gap-x-8 gap-y-6 py-8 md:grid-cols-4 md:gap-x-12 md:py-10">
+    {rows.map((r, i) => (
+      <div class="flex flex-col-reverse gap-1.5 md:leader" data-reveal style={`--i:${i}`}>
+        <dt class="text-[0.95rem] text-harbour/70 md:whitespace-nowrap">{r.label}</dt>
+        <dd class="data text-[2rem] font-bold leading-none text-harbour md:text-[2.4rem]" data-count={r.count ? '' : undefined}>{r.value}</dd>
+      </div>
+    ))}
+  </dl>
+</section>

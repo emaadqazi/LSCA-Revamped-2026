@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import NewsItem from '../components/NewsItem.astro';
+import NextUp from '../components/NextUp.astro';
 import { getNews } from '../lib/content';
 import { groupByMonth } from '../lib/dates';
 
@@ -20,17 +21,18 @@ const tags = [...new Set(news.map((n) => n.data.tag))].sort();
     )}
     {news.length ? (
       <div class="max-w-3xl space-y-10">
-        {groups.map((g) => (
-          <section aria-label={g.label} data-news-group>
+        {groups.map((g, i) => (
+          <section aria-label={g.label} data-news-group data-reveal="rise" style={`--i:${Math.min(i, 2)}`}>
             <h2 class="data border-b-2 border-harbour pb-2 text-lg text-harbour/70">{g.label}</h2>
             <ul class="divide-y divide-mist-deep">{g.items.map((n) => <NewsItem item={n} />)}</ul>
           </section>
         ))}
       </div>
     ) : (
-      <p class="max-w-xl rounded-[var(--radius-link)] border border-dashed border-mist-deep p-6 text-harbour/80">No links yet. Check back soon.</p>
+      <p class="max-w-xl rounded-[var(--radius-link)] border border-dashed border-mist-deep p-6 text-harbour/80" data-reveal="rise">No links yet. Check back soon.</p>
     )}
   </section>
+  <NextUp />
 </Base>
 
 <script>
