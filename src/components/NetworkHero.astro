@@ -1,18 +1,35 @@
 ---
 import LinkMark from './LinkMark.astro';
 import { landDots } from '../lib/landDots';
+import { CTA } from '../lib/site';
+
+const headline = 'Learn how the world moves.';
+const words = headline.split(' ');
 ---
 <section class="hero relative overflow-hidden bg-deep text-paper" data-globe>
+  <div class="hero-ground pointer-events-none absolute inset-0" aria-hidden="true"></div>
   <div class="wrap relative grid min-h-[min(100svh-4rem,54rem)] items-center gap-4 pb-12 pt-2 md:grid-cols-12 md:gap-8 md:py-16">
     <div class="relative order-2 z-10 md:order-1 md:col-span-6 lg:col-span-6">
-      <h1 class="display reveal text-[clamp(2.4rem,5.4vw,4.6rem)] leading-[0.98]" style="--d: 0.9s">
-        Laurier's supply chain club, since 2012.
+      <h1 class="display text-[clamp(2.6rem,6vw,5.2rem)] leading-[0.96]">
+        {words.map((w, i) => (
+          <><span class="word"><span class="word-in" style={`--d: ${0.7 + i * 0.09}s`}>{w}</span></span>{' '}</>
+        ))}
       </h1>
-      <p class="reveal mt-6 max-w-[32rem] text-lg text-mist/80 md:text-xl" style="--d: 1.15s">
-        We connect students with the people who plan, source, make and move the world's goods, through speaker panels, case competitions and workshops.
+      <p class="reveal mt-6 max-w-[32rem] text-lg text-mist/80 md:text-xl" style="--d: 1.25s">
+        Laurier's supply chain club since 2012. We put students in the room with the people who plan, source, make and move the world's goods.
       </p>
-      <div class="reveal mt-8 flex flex-wrap gap-3" style="--d: 1.35s">
+      <div class="reveal mt-8 flex flex-wrap gap-3" style="--d: 1.45s">
         <a href="/events" class="btn btn-signal">See upcoming events</a>
+        <a href={CTA.href} class="btn btn-outline-light">{CTA.label}</a>
+      </div>
+
+      <!-- Arrivals log: fed by the globe as each package reaches a port. Hidden until the first arrival. -->
+      <div class="arrivals mt-12 max-w-[22rem]" data-arrivals aria-live="off">
+        <p class="data flex items-center gap-2 text-sm text-mist/70">
+          <span class="live-dot" aria-hidden="true"></span>
+          Live on the map
+        </p>
+        <ol class="mt-2 space-y-1 text-[0.95rem]" data-arrivals-list></ol>
       </div>
     </div>
 
@@ -39,13 +56,67 @@ import { landDots } from '../lib/landDots';
     // If the logo intro is playing, assemble the globe as the curtain lifts.
     if (document.documentElement.classList.contains('intro')) addEventListener('lsca:intro-done', start, { once: true });
     else start();
+
+    // Arrivals log. The globe fires an event per package; show at most one every few seconds.
+    const panel = root.querySelector<HTMLElement>('[data-arrivals]');
+    const list = root.querySelector<HTMLElement>('[data-arrivals-list]');
+    let lastShown = 0;
+    root.addEventListener('lsca:arrival', (e) => {
+      const now = performance.now();
+      if (!panel || !list || now - lastShown < 2600) return;
+      lastShown = now;
+      const { from, to } = (e as CustomEvent<{ from: string; to: string }>).detail;
+      const li = document.createElement('li');
+      li.className = 'arrival';
+      const time = new Date().toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit', hour12: true }).replace(/\s?([ap])\.?m\.?/i, ' $1m');
+      li.innerHTML = `<span class="data text-mist/60">${time}</span><span class="truncate">${from} <span aria-hidden="true">→</span><span class="sr-only">to</span> ${to}</span><span class="data text-signal-bright">Arrived</span>`;
+      list.prepend(li);
+      panel.classList.add('is-live');
+      while (list.children.length > 3) list.lastElementChild?.remove();
+    });
   }
 </script>
 
 <style>
   [data-globe-ready] .globe-fallback { display: none; }
-  /* Copy arrives as the globe finishes assembling. */
-  .reveal { animation: reveal 700ms cubic-bezier(.2,.8,.2,1) var(--d, 0s) both; }
+  .hero-ground {
+    background:
+      radial-gradient(60% 50% at 70% 45%, color-mix(in srgb, var(--color-signal) 14%, transparent), transparent 70%),
+      linear-gradient(180deg, transparent 60%, var(--color-night));
+  }
+
+  /* Headline rises word by word out of its own baseline; copy follows as the globe finishes assembling. */
+  .word { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .word-in { display: inline-block; animation: word-in 900ms var(--ease-route) var(--d, 0s) both; }
+  @keyframes word-in { from { transform: translateY(110%); } }
+  .reveal { animation: reveal 700ms var(--ease-route) var(--d, 0s) both; }
   @keyframes reveal { from { opacity: 0; transform: translateY(14px); } }
+  :global(html.intro:not(.intro-leaving)) .word-in,
   :global(html.intro:not(.intro-leaving)) .reveal { animation-play-state: paused; }
+
+  .arrivals { opacity: 0; transition: opacity 600ms; }
+  .arrivals.is-live { opacity: 1; }
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 999px;
+    background: var(--color-signal-bright);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-signal-bright) 60%, transparent);
+    animation: live 1.8s ease-out infinite;
+  }
+  @keyframes live { to { box-shadow: 0 0 0 8px transparent; } }
+  .arrivals :global(.arrival) {
+    display: grid;
+    grid-template-columns: 4.2rem 1fr auto;
+    gap: 0.75rem;
+    align-items: baseline;
+    color: var(--color-mist);
+    animation: arrive 600ms var(--ease-route) both;
+  }
+  .arrivals :global(.arrival:nth-child(2)) { opacity: 0.6; }
+  .arrivals :global(.arrival:nth-child(3)) { opacity: 0.35; }
+  @keyframes arrive { from { opacity: 0; transform: translateX(-10px); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .word-in, .reveal { animation: none; }
+    .arrivals { display: none; }
+  }
 </style>

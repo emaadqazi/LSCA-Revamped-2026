@@ -51,8 +51,8 @@ const webcal = `webcal://${new URL(SITE.url).host}/events.ics`;
           <div data-panel="list" class="mt-8 space-y-10">
             {groups.map((g) => (
               <section aria-label={g.label}>
-                <h3 class="data mb-3 text-lg text-harbour/70" data-month-heading>{g.label}</h3>
-                <div class="grid gap-4">{g.items.map((e) => <EventRow event={e} />)}</div>
+                <h3 class="data mb-3 text-lg text-harbour/70" data-month-heading data-reveal>{g.label}</h3>
+                <div class="grid gap-4">{g.items.map((e, i) => <EventRow event={e} index={i} />)}</div>
               </section>
             ))}
             <p class="hidden text-harbour/75" data-empty-filter>No upcoming events of this type.</p>

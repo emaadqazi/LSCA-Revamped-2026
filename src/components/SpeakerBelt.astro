@@ -1,0 +1,115 @@
+---
+// Past speakers on a conveyor belt. Pulled from every event's `speakers` list at build time,
+// so it grows on its own as events are added. The belt pauses on hover and focus, and lays out
+// as a static wrapped row for reduced motion.
+import { Image } from 'astro:assets';
+import { getEvents } from '../lib/content';
+import { speakerPhoto, initials } from '../lib/images';
+
+const { past } = await getEvents();
+const seen = new Set<string>();
+const speakers = past
+  .flatMap((e) => e.data.speakers.map((s) => ({ ...s, event: e })))
+  .filter((s) => !seen.has(s.name) && seen.add(s.name))
+  .map((s) => ({ ...s, img: speakerPhoto(s.photo) }));
+
+// A short belt needs a few repeats before it loops seamlessly.
+const repeats = Math.max(2, Math.ceil(10 / Math.max(1, speakers.length)));
+---
+{speakers.length > 0 && (
+  <section class="overflow-hidden border-y border-mist-deep/70 bg-mist py-14 md:py-20" aria-labelledby="speakers-h">
+    <div class="wrap flex flex-wrap items-end justify-between gap-x-10 gap-y-3">
+      <h2 id="speakers-h" class="heading text-[clamp(1.75rem,3.5vw,2.5rem)]" data-reveal>People we've brought to campus</h2>
+      <p class="max-w-md text-harbour/75" data-reveal style="--i:1">Speakers from our panels. Each one took questions, stayed after, and left students with a name they could follow up.</p>
+    </div>
+
+    <div class="belt mt-10" data-reveal="rise" style="--i:2">
+      <div class="belt-run" style={`--repeats:${repeats}`}>
+        {Array.from({ length: repeats }).map((_, r) => (
+          <ul class="belt-track" aria-hidden={r > 0 ? 'true' : undefined} aria-label={r === 0 ? 'Past speakers' : undefined}>
+            {speakers.map((s) => (
+              <li class="crate">
+                <div class="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-mist-deep">
+                  {s.img ? (
+                    <Image src={s.img} alt="" width={112} height={112} class="h-full w-full object-cover" loading="lazy" />
+                  ) : (
+                    <span class="display grid h-full place-items-center text-base text-harbour/50">{initials(s.name)}</span>
+                  )}
+                </div>
+                <div class="min-w-0">
+                  <p class="font-semibold leading-tight">
+                    {s.linkedin && r === 0 ? <a href={s.linkedin} target="_blank" rel="noopener" class="link">{s.name}</a> : s.name}
+                  </p>
+                  <p class="mt-0.5 text-sm text-harbour/75">{s.title}</p>
+                  <p class="data mt-1 text-[0.8rem] text-harbour/55">{s.event.data.title}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ))}
+      </div>
+      <div class="rollers" aria-hidden="true">
+        {Array.from({ length: 36 }).map(() => <span></span>)}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .belt { position: relative; }
+  .belt-run {
+    display: flex;
+    width: max-content;
+    animation: belt 60s linear infinite;
+  }
+  .belt:hover .belt-run, .belt:focus-within .belt-run { animation-play-state: paused; }
+  .belt-track {
+    display: flex;
+    gap: 1rem;
+    padding-right: 1rem;
+  }
+  @keyframes belt { to { transform: translateX(calc(-100% / var(--repeats, 2))); } }
+
+  .crate {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 22rem;
+    padding: 1rem 1.25rem 1rem 1rem;
+    border: 1px solid var(--color-mist-deep);
+    border-radius: calc(var(--radius-link) - 0.25rem);
+    background: var(--color-paper);
+  }
+
+  /* The belt itself: a rail with rollers turning beneath the crates. */
+  .rollers {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.9rem;
+    padding-top: 0.6rem;
+    border-top: 2px solid var(--color-mist-deep);
+  }
+  .rollers span {
+    position: relative;
+    width: 12px; height: 12px;
+    border-radius: 999px;
+    border: 2px solid var(--color-mist-deep);
+  }
+  .rollers span::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 2px; height: 5px;
+    background: var(--color-mist-deep);
+    transform-origin: 50% 0;
+    translate: -50% 0;
+    animation: roll 1.3s linear infinite;
+  }
+  @keyframes roll { to { rotate: -360deg; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .belt-run { width: auto; animation: none; flex-wrap: wrap; padding-inline: 1rem; }
+    .belt-track { flex-wrap: wrap; }
+    .belt-track[aria-hidden="true"], .rollers { display: none; }
+  }
+</style>

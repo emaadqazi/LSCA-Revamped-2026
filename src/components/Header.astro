@@ -1,10 +1,10 @@
 ---
 import LinkMark from './LinkMark.astro';
-import { NAV, SITE } from '../lib/site';
+import { NAV, CTA, SITE } from '../lib/site';
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isActive = (href: string) => path === href || path.startsWith(href + '/');
 ---
-<header class="sticky top-0 z-40 border-b border-mist-deep/70 bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/85">
+<header class="site-header sticky top-0 z-40 border-b border-mist-deep/70 bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/85">
   <div class="wrap flex h-16 items-center justify-between gap-6 md:h-[4.5rem]">
     <a href="/" class="flex items-center gap-2.5" aria-label="LSCA home">
       <LinkMark class="h-9 w-9 md:h-10 md:w-10" />
@@ -29,6 +29,7 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
     </nav>
 
     <div class="flex items-center gap-2">
+      <a href={CTA.href} class="btn btn-primary hidden !py-2 text-sm lg:inline-flex" aria-current={isActive(CTA.href) ? 'page' : undefined}>{CTA.label}</a>
       <button
         type="button"
         class="-mr-2 grid h-11 w-11 place-items-center rounded-full lg:hidden"
@@ -56,6 +57,7 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
           </li>
         ))}
       </ul>
+      <a href={CTA.href} class="btn btn-primary mt-6 justify-center">{CTA.label}</a>
       <div class="mt-auto pt-8">
         <div class="flex justify-center gap-6 text-sm font-medium">
           <a class="link" href={SITE.social.instagram} target="_blank" rel="noopener">Instagram</a>
@@ -66,6 +68,11 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
     </nav>
   </div>
 </header>
+
+<style>
+  /* Keeps the header still while the rest of the page crossfades between routes. */
+  .site-header { view-transition-name: site-header; }
+</style>
 
 <script>
   const btn = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');

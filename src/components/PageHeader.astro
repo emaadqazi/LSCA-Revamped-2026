@@ -1,11 +1,14 @@
 ---
+// Title band for inner pages. The title wipes in and a single package travels the dashed
+// route along the bottom edge, the same motif as the home page.
 interface Props { title: string; intro?: string }
 const { title, intro } = Astro.props;
 ---
-<section class="border-b border-mist-deep/70 bg-mist">
+<section class="relative border-b border-mist-deep/70 bg-mist">
   <div class="wrap grid gap-6 pb-10 pt-12 md:grid-cols-12 md:pb-14 md:pt-20">
-    <h1 class="display text-[clamp(2.4rem,7vw,4.75rem)] md:col-span-7">{title}</h1>
-    {intro && <p class="max-w-xl self-end text-lg text-harbour/80 md:col-span-5">{intro}</p>}
+    <h1 class="display text-[clamp(2.4rem,7vw,4.75rem)] md:col-span-7" data-reveal>{title}</h1>
+    {intro && <p class="max-w-xl self-end text-lg text-harbour/80 md:col-span-5" data-reveal style="--i:2">{intro}</p>}
     <slot />
   </div>
+  <div class="route-line absolute inset-x-0 bottom-0 text-harbour" aria-hidden="true"></div>
 </section>

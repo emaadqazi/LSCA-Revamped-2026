@@ -1,0 +1,120 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import NextUp from '../components/NextUp.astro';
+import { getRosters } from '../lib/content';
+import { SITE } from '../lib/site';
+
+const [roster] = await getRosters();
+const hiring = roster.data.portfolios.flatMap((p) => p.members.filter((m) => m.status === 'hiring').map((m) => ({ ...m, portfolio: p.name })));
+const portfolios = roster.data.portfolios.map((p) => p.name).filter((n) => n !== 'Presidents');
+const list = new Intl.ListFormat('en-CA', { type: 'conjunction' });
+
+const students = [
+  {
+    title: 'Come to an event',
+    body: 'Every panel, workshop, social and competition is open to all Laurier students, in any program and any year. There is no membership fee and nothing to sign. Turning up is joining.',
+    link: { href: '/events', label: 'See upcoming events' },
+  },
+  {
+    title: 'Join the executive team',
+    body: `We hire new directors every fall across ${list.format(portfolios.map((p) => p.toLowerCase()))}. Applications are announced on Instagram first. If you want a nudge when they open, email us and we will let you know.`,
+    link: { href: SITE.social.instagram, label: 'Follow for the application window', external: true },
+  },
+  {
+    title: 'Write for the site',
+    body: 'Our articles are written by members, on anything from procurement to the co-op search. Pitch an idea in a paragraph and the Marketing team will help you shape it.',
+    link: { href: `mailto:${SITE.email}?subject=Article%20pitch`, label: 'Pitch an article' },
+  },
+];
+
+const partners = [
+  {
+    title: 'Speak on a panel',
+    body: 'Our speaker panels fill rooms: more than 150 students came to the last one. If you work in supply chain, operations, procurement or logistics and want to talk about how you got there, we would like to hear from you.',
+  },
+  {
+    title: 'Run a workshop or sponsor an event',
+    body: 'Companies host hands-on sessions, judge case competitions and sponsor socials. Our Corporate Relations team will work out the format with you.',
+  },
+];
+---
+<Base title="Get involved" description="How to get involved with the Laurier Supply Chain Association: attend events, join the executive team, write an article, or partner with us as a company or alum.">
+  <PageHeader title="Get involved" intro="Four ways in, whether you are a first-year who has never heard the word procurement, or a company that wants to meet the students who will run its supply chain." />
+
+  <section class="wrap py-14 md:py-20" aria-labelledby="students-h">
+    <div class="grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <h2 id="students-h" class="heading text-[clamp(1.6rem,3vw,2.2rem)]" data-reveal>Students</h2>
+        <p class="mt-4 max-w-sm text-harbour/80" data-reveal style="--i:1">Most of our members found supply chain at an LSCA event, not in a course calendar.</p>
+      </div>
+      <ul class="divide-y divide-mist-deep lg:col-span-8">
+        {students.map((s, i) => (
+          <li class="py-8 first:pt-0 last:pb-0" data-reveal="rise" style={`--i:${i + 1}`}>
+            <h3 class="heading text-2xl">{s.title}</h3>
+            <p class="mt-3 max-w-2xl text-harbour/85">{s.body}</p>
+            <a href={s.link.href} class="link mt-4 inline-block font-semibold" target={s.link.external ? '_blank' : undefined} rel={s.link.external ? 'noopener' : undefined}>{s.link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    {hiring.length > 0 && (
+      <div class="mt-14 rounded-[var(--radius-link)] border-2 border-dashed border-mist-deep p-6 md:p-8" data-reveal="rise">
+        <h3 class="heading text-xl">Open right now</h3>
+        <ul class="mt-4 grid gap-3 sm:grid-cols-2">
+          {hiring.map((h) => (
+            <li class="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-mist px-4 py-3">
+              <span><span class="font-semibold">{h.role}</span><span class="text-harbour/70"> · {h.portfolio}</span></span>
+              {h.applyUrl && <a href={h.applyUrl} class="btn btn-primary !px-4 !py-1.5 text-sm" target="_blank" rel="noopener">Apply</a>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </section>
+
+  <section class="border-y border-mist-deep/70 bg-mist py-14 md:py-20" aria-labelledby="partners-h">
+    <div class="wrap grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <h2 id="partners-h" class="heading text-[clamp(1.6rem,3vw,2.2rem)]" data-reveal>Companies and alumni</h2>
+        <p class="mt-4 max-w-sm text-harbour/80" data-reveal style="--i:1">You get a room full of students who chose to spend an evening on supply chain. They get a name they can follow up.</p>
+        <a href={`mailto:${SITE.email}?subject=Partnering%20with%20LSCA`} class="btn btn-primary mt-6" data-reveal="rise" style="--i:2">Email Corporate Relations</a>
+      </div>
+      <div class="grid gap-6 sm:grid-cols-2 lg:col-span-8">
+        {partners.map((p, i) => (
+          <div class="rounded-[var(--radius-link)] bg-paper p-6 md:p-7" data-reveal="rise" style={`--i:${i + 1}`}>
+            <h3 class="heading text-xl">{p.title}</h3>
+            <p class="mt-3 text-harbour/85">{p.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap py-14 md:py-20" aria-labelledby="contact-h">
+    <div class="grid gap-10 lg:grid-cols-12">
+      <h2 id="contact-h" class="heading text-[clamp(1.6rem,3vw,2.2rem)] lg:col-span-4" data-reveal>Reach us</h2>
+      <dl class="grid gap-x-10 gap-y-6 sm:grid-cols-3 lg:col-span-8" data-reveal="rise" style="--i:1">
+        <div>
+          <dt class="text-sm text-harbour/65">Email</dt>
+          <dd class="mt-1 font-semibold"><a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a></dd>
+        </div>
+        <div>
+          <dt class="text-sm text-harbour/65">Instagram</dt>
+          <dd class="mt-1 font-semibold"><a class="link" href={SITE.social.instagram} target="_blank" rel="noopener">@lauriersupplychain</a></dd>
+        </div>
+        <div>
+          <dt class="text-sm text-harbour/65">LinkedIn</dt>
+          <dd class="mt-1 font-semibold"><a class="link" href={SITE.social.linkedin} target="_blank" rel="noopener">Laurier Supply Chain Association</a></dd>
+        </div>
+        <div class="sm:col-span-3">
+          <dt class="text-sm text-harbour/65">On campus</dt>
+          <dd class="mt-1 text-harbour/85">{SITE.address.join(', ')}</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <NextUp />
+</Base>

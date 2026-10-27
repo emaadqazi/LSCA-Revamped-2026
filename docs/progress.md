@@ -81,3 +81,35 @@ Production currently shows "nothing scheduled / first articles on the way" empty
 - Wei Shao goes by "Wayne Shao" on LinkedIn. Evangline Yamine's profile spells her name "Evangeline" (the site still uses the list's spelling; awaiting the user's call).
 - **Still no LinkedIn:** Matthew Nagy, Devon Sharma, Estelle Sing Fat.
 - Removed every "Join our Slack" link (header, mobile menu, hero, footer) and the Slack URL from `site.ts`.
+
+---
+
+## Session 3: 2026-10-27 (branch `feature/wow-redesign`)
+
+Brief: find the gaps, then revise the whole site so it has a "wow" factor with supply-chain-themed motion while staying professional.
+
+### Gaps found
+- After the globe, the home page was three flat lists. No story of what a student gets, no proof points, nothing moved.
+- No way in: no page or button for students who want to join or companies who want to speak/sponsor. Only a footer email.
+- Past speakers (EY, Honeywell, LCBO, faculty) were buried in one past-event page.
+- Event pages had an empty right column; About was text-only; the faculty advisor photo existed but wasn't used.
+- No motion outside the hero and no page-to-page transition.
+- Bug: the globe canvas rendered at device-pixel size on 2x/3x screens (`renderer.setSize(w, h, false)`), so on phones and Retina Macs it was 2–3× too big and spilled over the headline.
+
+### Done
+- **Concept: shipment tracking.** Logistics vernacular runs through the site: waybill leaders, barcodes, a tracking card, route lines with a travelling package.
+- **Home:** word-by-word headline rise; a **live arrivals log** under the hero copy, fed by the globe (`lsca:arrival` events fire when a package reaches a port, shown at most every 2.6 s); a **waybill strip** of facts with count-ups; the **tracking journey** (`TrackingJourney.astro`): a sticky shipping-label card and a vertical route where a parcel travels as you scroll, stops light up and the status changes from "Order received" to "Delivered"; a **speaker conveyor belt** (`SpeakerBelt.astro`) built from every past event's speakers, with rollers turning underneath, paused on hover; staggered reveals on the rest.
+- **New page `/get-involved`** for students (attend, apply, write) and companies/alumni (speak, sponsor), with the header's "Get involved" button, the footer and the hero pointing at it. Open `hiring` roles from the roster are listed automatically.
+- **`NextUp.astro`**: pre-footer band on inner pages with the next event on the calendar (or Instagram when there is none).
+- **About:** the five stages (Plan, Source, Make, Move, Deliver) as stops on one dashed route; faculty advisor photo.
+- **Event pages:** sticky "logistics" label (date, time, where, status, calendar buttons, map link); speakers under the description; "Also coming up" below.
+- **Site-wide motion system** (`src/scripts/motion.ts`, loaded by `Base.astro`): `data-reveal` wipes/rises, `data-count` count-ups, `data-track` scroll-driven timelines. Cross-document view transitions (`@view-transition`), header held still. Everything shows its end state under `prefers-reduced-motion` and without JS.
+- Fixed the globe sizing bug above.
+
+### Checked
+- Production build passes (12 pages). Screenshots at 1440px and iPhone 13 for every page: no horizontal overflow, no console errors, reduced-motion state verified, intro loader still hands off to the hero.
+
+### Next steps
+- Review on a real phone; decide whether the belt speed (60 s per loop) and the journey's per-stop height (34vh on desktop) feel right.
+- `npm run check` needs `@astrojs/check` and `typescript` as devDependencies; they were not added this session.
+- Replace the draft example content before launch (unchanged from Session 2).

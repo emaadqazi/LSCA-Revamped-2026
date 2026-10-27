@@ -24,9 +24,19 @@
 
 **The logo mark** (`src/components/LinkMark.astro`) is redrawn as SVG: two 104×224 rounded rectangles at 45°. A clipped copy of the light link is drawn over the dark one at the right-hand crossing so they read as interlocked. `public/favicon.svg` uses the same geometry.
 
+## Motion and the tracking motif (Session 3)
+The site borrows the vocabulary of shipment tracking, which is the one thing every visitor already knows about supply chain:
+- **Waybill leaders** (`leader` utility): label, dotted line, value. Used for facts and event details.
+- **Barcodes** (`.barcode`): decorative stripes on labels. Always `aria-hidden`.
+- **Route lines** (`.route-line`): a dashed line with one package travelling along it. Section dividers on page headers, the Next-up band and the footer.
+- **The tracking journey** on the home page is the set piece: scroll progress (`--p`, set by `motion.ts`) moves a parcel down a route, fills the rail, lights stops and updates the card's status. Stop thresholds are measured from the DOM, not hard-coded.
+- **Reveals** (`data-reveal`) wipe in from the left, the direction goods travel, with `--i` stagger. `data-reveal="rise"` for photos and outlined blocks a wipe would clip. The script removes the attribute once landed so the element's own hover transitions apply.
+- Reduced motion: every effect shows its end state; the belt becomes a static wrapped row; the arrivals log is hidden because the globe doesn't animate.
+- Colours added: `night #041C24` (footer, bottom of the hero) and `signal-bright #3CC4E6` (glow on dark only).
+
 ## Choices made on purpose
 - **Avoided common signs of an AI-generated page** (per the frontend-design skill): no all-caps eyebrow labels, no monospace data labels, no grids of identical cards with soft shadows, no gradient blobs or glassmorphism, no "→" appended to links, sentence-case copy.
-- **Bold moments are limited to the intro loader and the globe hero.** Everything else stays quiet.
+- **Bold moments are the intro loader, the globe hero and the tracking journey.** Everything else stays quiet.
 - **Event cards look like shipping labels**: a tear-off date stub with a dashed perforation and punched holes. The "This week" chip appears automatically.
 - **Headshots:** shared 4:5 crop, slightly desaturated until hover so mismatched photos sit together. A member without a photo gets an initials monogram, so the grid stays consistent before and after media day.
 - **Drafts** (`draft: true`) render only in dev, so the team can preview content safely.
@@ -41,6 +51,11 @@
 - **Images live in `src/assets`, not `public`**, so Astro compresses them (old headshots went from up to 800 KB to 3–57 KB).
 - **The globe's land dots** are computed at build time in `src/lib/landDots.ts` (world-atlas 110m + d3-geo) and embedded as JSON. The browser never downloads map data.
 - **The intro loader and hero stay in sync:** the hero's `.reveal` animations are paused while `html.intro` is set, and the globe mounts on the `lsca:intro-done` event.
+- **Always call `renderer.setSize(w, h)` without `false`** so three.js also sets the canvas's CSS size. With `false`, the canvas displays at device-pixel size and is 2–3× too big on Retina and phone screens.
+- **IntersectionObserver measures the clipped box in Chrome.** An element hidden with `clip-path: inset(0 100% 0 0)` is a sliver wide, so an observer with `threshold: 0.05` never fires. Use `threshold: 0`.
+- **Scoped `position: relative` beats Tailwind's `lg:sticky`.** Astro adds `[data-astro-cid]` to scoped selectors, raising their specificity above a utility class. Put the sticky rule in the scoped `<style>` inside a media query instead.
+- **Spaces between inline-block words** must live outside the `overflow: hidden` wrapper, otherwise they collapse and the words run together.
 
 ## Ideas not yet tried
-- Connecting-dots motifs elsewhere in the site (section dividers, the events timeline).
+- A scroll-driven version of the globe (zooming to Waterloo as the page scrolls).
+- Per-event "tracking numbers" on the shipping-label cards, generated from the slug.

@@ -3,8 +3,10 @@ import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import AddToCalendar from '../../components/AddToCalendar.astro';
+import EventRow from '../../components/EventRow.astro';
 import { longDate, timeRange, status } from '../../lib/dates';
 import { speakerPhoto, initials } from '../../lib/images';
+import { getEvents } from '../../lib/content';
 import { SITE } from '../../lib/site';
 
 export async function getStaticPaths() {
@@ -16,6 +18,9 @@ const { event } = Astro.props;
 const { Content } = await render(event);
 const d = event.data;
 const st = status(d.start, d.end);
+const { upcoming } = await getEvents();
+const more = upcoming.filter((e) => e.id !== event.id).slice(0, 2);
+const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${d.location}, ${SITE.address.join(', ')}`)}`;
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Event',
@@ -30,63 +35,94 @@ const jsonLd = {
 ---
 <Base title={d.title} description={d.summary} jsonLd={jsonLd} noindex={d.draft}>
   <article>
-    <header class="border-b border-mist-deep/70 bg-mist">
+    <header class="relative border-b border-mist-deep/70 bg-mist">
       <div class="wrap pb-10 pt-8 md:pb-14 md:pt-12">
         <a href="/events" class="link text-sm font-semibold">All events</a>
-        <p class="mt-8 flex flex-wrap items-center gap-2 text-sm font-semibold text-signal-ink">
+        <p class="mt-8 flex flex-wrap items-center gap-2 text-sm font-semibold text-signal-ink" data-reveal>
           {d.type}
           {st === 'past' && <span class="chip">Past event</span>}
           {st === 'this-week' && <span class="chip !border-signal !bg-signal/10">This week</span>}
           {d.draft && <span class="chip !border-dashed">Draft</span>}
         </p>
-        <h1 class="display mt-3 max-w-4xl text-[clamp(2.2rem,6vw,4.25rem)]">{d.title}</h1>
-
-        <dl class="mt-8 grid max-w-4xl gap-px overflow-hidden rounded-[var(--radius-link)] border border-mist-deep bg-mist-deep sm:grid-cols-3">
-          <div class="bg-paper p-4"><dt class="text-sm text-harbour/65">Date</dt><dd class="data mt-1 text-lg">{longDate(d.start)}</dd></div>
-          <div class="bg-paper p-4"><dt class="text-sm text-harbour/65">Time</dt><dd class="data mt-1 text-lg">{timeRange(d.start, d.end, d.allDay)}</dd></div>
-          <div class="bg-paper p-4"><dt class="text-sm text-harbour/65">Location</dt><dd class="data mt-1 text-lg">{d.location}</dd></div>
-        </dl>
-
-        {st !== 'past' && (
-          <div class="mt-6 flex flex-wrap gap-2">
-            {d.registerUrl && <a href={d.registerUrl} class="btn btn-primary !py-2 text-sm" target="_blank" rel="noopener">Register</a>}
-            <AddToCalendar event={event} />
-          </div>
-        )}
+        <h1 class="display mt-3 max-w-4xl text-[clamp(2.2rem,6vw,4.25rem)]" data-reveal style="--i:1">{d.title}</h1>
+        <p class="mt-5 max-w-2xl text-xl text-harbour/85" data-reveal style="--i:2">{d.summary}</p>
       </div>
+      <div class="route-line absolute inset-x-0 bottom-0 text-harbour" aria-hidden="true"></div>
     </header>
 
-    <div class="wrap grid gap-12 py-12 md:py-16 lg:grid-cols-12">
+    <div class="wrap grid gap-12 py-12 md:py-16 lg:grid-cols-12 lg:gap-16">
       <div class="lg:col-span-7">
-        <p class="text-xl text-harbour">{d.summary}</p>
-        <div class="prose prose-lg mt-6 max-w-none prose-headings:font-bold prose-a:text-signal-ink [--tw-prose-body:var(--color-harbour)] [--tw-prose-bullets:var(--color-signal)]">
+        <div class="prose prose-lg max-w-none prose-headings:font-bold prose-a:text-signal-ink [--tw-prose-body:var(--color-harbour)] [--tw-prose-bullets:var(--color-signal)]">
           <Content />
         </div>
         {d.audience && <p class="mt-8 rounded-[var(--radius-link)] bg-mist p-5 text-harbour/85"><span class="font-semibold">Who it's for:</span> {d.audience}</p>}
+
+        {d.speakers.length > 0 && (
+          <section class="mt-12" aria-labelledby="speakers-h">
+            <h2 id="speakers-h" class="heading text-2xl">Speakers</h2>
+            <ul class="mt-5 grid gap-x-8 sm:grid-cols-2">
+              {d.speakers.map((s, i) => {
+                const img = speakerPhoto(s.photo);
+                return (
+                  <li class="flex items-center gap-4 border-t border-mist-deep py-4" data-reveal="rise" style={`--i:${i}`}>
+                    <div class="h-16 w-16 shrink-0 overflow-hidden rounded-full bg-mist">
+                      {img ? <Image src={img} alt="" width={128} height={128} class="h-full w-full object-cover" loading="lazy" /> : <span class="display grid h-full place-items-center text-lg text-harbour/40">{initials(s.name)}</span>}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="font-semibold">{s.linkedin ? <a href={s.linkedin} class="link" target="_blank" rel="noopener">{s.name}</a> : s.name}</p>
+                      <p class="text-sm text-harbour/75">{s.title}</p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
       </div>
 
-      {d.speakers.length > 0 && (
-        <aside class="lg:col-span-5" aria-labelledby="speakers-h">
-          <h2 id="speakers-h" class="heading text-2xl">Speakers</h2>
-          <ul class="mt-5 divide-y divide-mist-deep border-y border-mist-deep">
-            {d.speakers.map((s) => {
-              const img = speakerPhoto(s.photo);
-              return (
-                <li class="flex items-center gap-4 py-4">
-                  <div class="h-16 w-16 shrink-0 overflow-hidden rounded-full bg-mist">
-                    {img ? <Image src={img} alt="" width={128} height={128} class="h-full w-full object-cover" loading="lazy" /> : <span class="display grid h-full place-items-center text-lg text-harbour/40">{initials(s.name)}</span>}
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <p class="font-semibold">{s.name}</p>
-                    <p class="text-sm text-harbour/75">{s.title}</p>
-                  </div>
-                  {s.linkedin && <a href={s.linkedin} target="_blank" rel="noopener" class="link shrink-0 text-sm">LinkedIn</a>}
-                </li>
-              );
-            })}
-          </ul>
-        </aside>
-      )}
+      <!-- Logistics card: a shipping label for the event, pinned while the description scrolls. -->
+      <aside class="lg:col-span-5" aria-label="Event details">
+        <div class="logistics" data-reveal="rise" style="--i:2">
+          <dl class="grid gap-5">
+            <div class="leader"><dt class="text-sm text-harbour/65">Date</dt><dd class="data text-lg">{longDate(d.start)}</dd></div>
+            <div class="leader"><dt class="text-sm text-harbour/65">Time</dt><dd class="data text-lg">{timeRange(d.start, d.end, d.allDay)}</dd></div>
+            <div class="leader"><dt class="text-sm text-harbour/65">Where</dt><dd class="data text-lg">{d.location}</dd></div>
+            <div class="leader"><dt class="text-sm text-harbour/65">Status</dt><dd class="data text-lg">{st === 'past' ? 'Held' : st === 'this-week' ? 'This week' : 'Scheduled'}</dd></div>
+          </dl>
+          {st !== 'past' ? (
+            <div class="mt-6 flex flex-col gap-2">
+              {d.registerUrl && <a href={d.registerUrl} class="btn btn-primary justify-center" target="_blank" rel="noopener">Register</a>}
+              <AddToCalendar event={event} class="flex flex-col gap-2" />
+              {d.location !== 'TBD' && <a href={mapsUrl} class="link self-start text-sm font-semibold" target="_blank" rel="noopener">Find the room on a map</a>}
+            </div>
+          ) : (
+            <p class="mt-6 text-sm text-harbour/75">This event has already happened. <a href="/events" class="link font-semibold">See what's coming up.</a></p>
+          )}
+          <div class="barcode mt-6 h-8 w-1/2 text-harbour/60" aria-hidden="true"></div>
+        </div>
+      </aside>
     </div>
   </article>
+
+  {more.length > 0 && (
+    <section class="border-t border-mist-deep/70 bg-mist py-12 md:py-16" aria-labelledby="more-h">
+      <div class="wrap">
+        <h2 id="more-h" class="heading text-2xl">Also coming up</h2>
+        <div class="mt-8 grid gap-4">{more.map((e, i) => <EventRow event={e} index={i} />)}</div>
+      </div>
+    </section>
+  )}
 </Base>
+
+<style>
+  .logistics {
+    position: relative;
+    padding: 1.5rem;
+    border: 1px solid var(--color-mist-deep);
+    border-radius: var(--radius-link);
+    background: var(--color-paper);
+    box-shadow: 0 24px 48px -32px color-mix(in srgb, var(--color-harbour) 35%, transparent);
+  }
+  .logistics :global(.btn) { justify-content: center; }
+  @media (min-width: 1024px) { .logistics { position: sticky; top: 7rem; } }
+</style>

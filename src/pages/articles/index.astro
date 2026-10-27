@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
+import NextUp from '../../components/NextUp.astro';
 import { getArticles } from '../../lib/content';
 
 const articles = await getArticles();
@@ -12,13 +13,14 @@ const [lead, ...rest] = articles;
   <section class="wrap py-12 md:py-16">
     {lead ? (
       <>
-        <div class="max-w-3xl"><ArticleCard article={lead} size="lg" /></div>
-        {rest.length > 0 && <div class="mt-14 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">{rest.map((a) => <ArticleCard article={a} />)}</div>}
+        <div class="max-w-3xl" data-reveal="rise"><ArticleCard article={lead} size="lg" /></div>
+        {rest.length > 0 && <div class="mt-14 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">{rest.map((a, i) => <div data-reveal="rise" style={`--i:${i % 3}`}><ArticleCard article={a} /></div>)}</div>}
       </>
     ) : (
-      <p class="max-w-xl rounded-[var(--radius-link)] border border-dashed border-mist-deep p-6 text-harbour/80">
+      <p class="max-w-xl rounded-[var(--radius-link)] border border-dashed border-mist-deep p-6 text-harbour/80" data-reveal="rise">
         Our first articles are being written now. Want to write one? Email <a class="link font-semibold" href="mailto:info@lsca.ca">info@lsca.ca</a>.
       </p>
     )}
   </section>
+  <NextUp />
 </Base>

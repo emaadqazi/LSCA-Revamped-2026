@@ -80,3 +80,4 @@ For a director role that isn't filled yet, add a placeholder:
 - Colours come from the logo: `mist #E3EBF1`, `harbour #0B4558`, `signal #0A9CC0`, `deep #062A36` (see `src/styles/global.css`). Use `signal-ink #07738E` for small light-blue text on light backgrounds; plain `signal` doesn't meet contrast requirements there.
 - One typeface, Archivo, used at three widths: wide (`.display`) for page titles, normal for body text, condensed (`.data`) for dates and times.
 - The chain-link mark is `src/components/LinkMark.astro`. It's drawn in SVG, so it stays sharp at any size.
+- Motion is opt-in per element: add `data-reveal` (wipe) or `data-reveal="rise"` to anything that should animate in, and `style="--i: n"` to stagger siblings. Numbers marked `data-count` count up. See `docs/design-notes.md` for the tracking motif and `src/scripts/motion.ts` for the mechanics.
