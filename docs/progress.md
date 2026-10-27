@@ -75,3 +75,9 @@ Production currently shows "nothing scheduled / first articles on the way" empty
   - Katie's photo came as a circle on white. It was cropped to the largest 4:5 box inside the circle, so it's small (244×306) and a full-size original would be sharper.
 - **Member emails are shown on cards** (optional `email` field in the team schema, rendered as a `mailto:` link under each person) so visitors can reach the exec for inquiries. Emails come from `members/list.md`.
 - `members/` (the raw list and photos) is intentionally left **untracked**.
+
+### LinkedIn links (2026-10-21, on `main`)
+- Found 2026–27 LinkedIn URLs by searching LinkedIn in the user's own logged-in Chrome (Claude in Chrome). The user approved the less certain matches (Bryan Wu, Quinn James, Abby Soh, Findlay Stone, Katie Lee).
+- Wei Shao goes by "Wayne Shao" on LinkedIn. Evangline Yamine's profile spells her name "Evangeline" (the site still uses the list's spelling; awaiting the user's call).
+- **Still no LinkedIn:** Matthew Nagy, Devon Sharma, Estelle Sing Fat.
+- Removed every "Join our Slack" link (header, mobile menu, hero, footer) and the Slack URL from `site.ts`.
