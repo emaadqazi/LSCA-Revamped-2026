@@ -3,15 +3,18 @@ import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import NewsItem from '../components/NewsItem.astro';
 import NextUp from '../components/NextUp.astro';
-import { getNews } from '../lib/content';
-import { groupByMonth } from '../lib/dates';
+import { getNews, getWeeklyNews } from '../lib/content';
+import { groupByMonth, longDate, shortDate } from '../lib/dates';
 
-const news = await getNews();
-const groups = groupByMonth(news, (n) => n.data.date);
-const tags = [...new Set(news.map((n) => n.data.tag))].sort();
+const picked = await getNews();
+const { week, updated, thisWeek, earlier } = await getWeeklyNews();
+const archive = groupByMonth(earlier, (n) => n.data.week);
+const tags = [...new Set([...thisWeek, ...earlier, ...picked].map((n) => n.data.tag))].sort();
+// Weeks produced without the model carry the publishers' own blurbs; say so.
+const byAi = thisWeek.some((n) => n.data.method === 'ai');
 ---
-<Base title="Industry news" description="Supply chain news and reading picked by LSCA: logistics, procurement, trade policy and technology.">
-  <PageHeader title="Industry news" intro="Stories from across supply chain that our team thinks are worth your time, each with a line on why it matters." />
+<Base title="Industry news" description="Five supply chain stories a week, summarized for students: logistics, procurement, trade policy, technology and careers, plus links picked by the LSCA team.">
+  <PageHeader title="Industry news" intro="Five stories a week from the supply chain trade press, summarized with a line on why each one matters to you. Refreshed every Monday, plus links our team picks by hand." />
   <section class="wrap py-12 md:py-16">
     {tags.length > 1 && (
       <div class="js-only mb-8 flex flex-wrap gap-2" role="group" aria-label="Filter by topic" hidden>
@@ -19,18 +22,55 @@ const tags = [...new Set(news.map((n) => n.data.tag))].sort();
         {tags.map((t) => <button type="button" class="chip" aria-pressed="false" data-tag={t}>{t}</button>)}
       </div>
     )}
-    {news.length ? (
-      <div class="max-w-3xl space-y-10">
-        {groups.map((g, i) => (
-          <section aria-label={g.label} data-news-group data-reveal="rise" style={`--i:${Math.min(i, 2)}`}>
-            <h2 class="data border-b-2 border-harbour pb-2 text-lg text-harbour/70">{g.label}</h2>
-            <ul class="divide-y divide-mist-deep">{g.items.map((n) => <NewsItem item={n} />)}</ul>
-          </section>
-        ))}
-      </div>
-    ) : (
-      <p class="max-w-xl rounded-[var(--radius-link)] border border-dashed border-mist-deep p-6 text-harbour/80" data-reveal="rise">No links yet. Check back soon.</p>
+
+    {thisWeek.length > 0 && week && updated && (
+      <section class="max-w-3xl" aria-labelledby="week-h" data-news-group data-reveal="rise">
+        <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b-2 border-harbour pb-2">
+          <h2 id="week-h" class="heading text-2xl">This week in supply chain</h2>
+          <span class="data text-lg text-harbour/70">Week of {shortDate(week)}</span>
+        </div>
+        <ol class="divide-y divide-mist-deep">{thisWeek.map((n) => <NewsItem item={n} />)}</ol>
+        <p class="mt-4 inline-flex max-w-full items-start gap-2 rounded-full border border-mist-deep bg-mist px-3.5 py-2 text-sm text-harbour/80">
+          <svg class="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="6.25" /><path d="M8 4.5V8l2.5 1.5" /></svg>
+          <span>
+            Last updated <time datetime={updated.toISOString()}>{longDate(updated)}</time>.
+            {byAi
+              ? ' Five stories are chosen and summarized by AI from seven supply chain publications every Monday.'
+              : ' Five stories are chosen automatically from seven supply chain publications every Monday; summaries are the publishers\u2019 own.'}
+          </span>
+        </p>
+      </section>
     )}
+
+    {archive.length > 0 && (
+      <section class="mt-14 max-w-3xl" aria-labelledby="earlier-h" data-news-group>
+        <h2 id="earlier-h" class="heading text-2xl">Earlier weeks</h2>
+        <div class="mt-6 space-y-10">
+          {archive.map((g) => (
+            <section aria-label={g.label} data-news-group>
+              <h3 class="data border-b-2 border-harbour pb-2 text-lg text-harbour/70">{g.label}</h3>
+              <ul class="divide-y divide-mist-deep">{g.items.map((n) => <NewsItem item={n} />)}</ul>
+            </section>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {picked.length > 0 && (
+      <section class="mt-14 max-w-3xl" aria-labelledby="picked-h" data-news-group data-reveal="rise">
+        <div class="border-b-2 border-harbour pb-2">
+          <h2 id="picked-h" class="heading text-2xl">Picked by the team</h2>
+        </div>
+        <ul class="divide-y divide-mist-deep">{picked.map((n) => <NewsItem item={n} />)}</ul>
+      </section>
+    )}
+
+    {!thisWeek.length && !picked.length && (
+      <p class="max-w-xl rounded-[var(--radius-link)] border border-dashed border-mist-deep p-6 text-harbour/80" data-reveal="rise">
+        The first weekly digest arrives on Monday. Check back then.
+      </p>
+    )}
+    <p class="js-only mt-8 hidden text-harbour/75" data-empty-filter hidden>No stories with this topic yet.</p>
   </section>
   <NextUp />
 </Base>
@@ -38,15 +78,19 @@ const tags = [...new Set(news.map((n) => n.data.tag))].sort();
 <script>
   document.querySelectorAll<HTMLElement>('.js-only').forEach((el) => (el.hidden = false));
   const btns = document.querySelectorAll<HTMLButtonElement>('[data-tag]');
+  const empty = document.querySelector<HTMLElement>('[data-empty-filter]');
   btns.forEach((b) =>
     b.addEventListener('click', () => {
       btns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
       document.querySelectorAll<HTMLElement>('[data-news-tag]').forEach((li) => {
         li.hidden = b.dataset.tag !== 'all' && li.dataset.newsTag !== b.dataset.tag;
       });
+      // Hide any group (week, month, section) with nothing left to show. Nested groups work because
+      // a parent only counts its descendants' visibility.
       document.querySelectorAll<HTMLElement>('[data-news-group]').forEach((g) => {
         g.hidden = ![...g.querySelectorAll<HTMLElement>('[data-news-tag]')].some((li) => !li.hidden);
       });
+      empty?.classList.toggle('hidden', [...document.querySelectorAll<HTMLElement>('[data-news-tag]')].some((li) => !li.hidden));
     }),
   );
 </script>

@@ -45,9 +45,21 @@ The event appears on the home page, the events list, the month calendar and the 
 
 Copy `src/content/articles/how-to-write-an-lsca-article.md`, which shows every formatting option. Fill in `title`, `author`, `authorRole`, `date`, `excerpt` and `tags`, write in Markdown, and remove `draft: true` when it's ready.
 
+## Weekly industry news (automatic)
+
+Every Monday at 6–7am Waterloo time, the **Weekly industry news** workflow (`.github/workflows/news.yml`) runs `scripts/fetch-news.mjs`. The script reads seven trade-press feeds (Supply Chain Dive, FreightWaves, The Loadstar, SupplyChainBrain, gCaptain, Inside Logistics, Supply Professional), keeps the past week's stories, and asks Claude to pick the five most worth a student's time and write a two-sentence summary, a "why it matters" line and a topic tag for each. The picks are committed to `src/content/news/weekly.json` and the site redeploys. They appear at the top of `/news` under "This week in supply chain" (with a "Last updated" tag at the bottom) and in the home page's Industry news panel. Earlier weeks stay on `/news` grouped by month for six months.
+
+**One-time setup:** in the GitHub repo go to Settings → Secrets and variables → Actions and add a secret named `ANTHROPIC_API_KEY`. A week costs a few cents.
+
+- **Refresh this week's picks now:** Actions tab → Weekly industry news → Run workflow. Re-running in the same week replaces that week's five; it never adds a sixth.
+- **Preview locally:** `npm run news -- --dry-run` (needs `ANTHROPIC_API_KEY` in your shell) or `npm run news -- --dry-run --no-ai` for a no-key version that uses the publishers' own blurbs. Drop `--dry-run` to write the file; if `npm run dev` is running, restart it afterwards so it re-reads the collection.
+- **Fix or remove a pick:** edit `src/content/news/weekly.json` by hand. Entries for past weeks are never touched by the script.
+- **Change the model, sources or prompt:** `NEWS_MODEL` env (default `claude-sonnet-5`), the `FEEDS` list and `SYSTEM` prompt at the top of `scripts/fetch-news.mjs`.
+- If the API call fails the workflow fails (GitHub emails the repo owner) and last week's picks stay up.
+
 ## Add an industry news link
 
-Add an entry to the top of `src/content/news/links.json`:
+Hand-picked links show on `/news` under "Picked by the team". Add an entry to the top of `src/content/news/links.json`:
 
 ```json
 {
