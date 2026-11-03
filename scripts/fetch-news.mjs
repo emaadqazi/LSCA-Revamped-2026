@@ -10,7 +10,7 @@
 //   node scripts/fetch-news.mjs --dry-run   print the picks, write nothing
 //   node scripts/fetch-news.mjs --no-ai     skip Claude: heuristic picks with the publishers' own blurbs
 //
-// Env: ANTHROPIC_API_KEY (required unless --no-ai), NEWS_MODEL (default claude-sonnet-5).
+// Env: ANTHROPIC_API_KEY (required unless --no-ai), NEWS_MODEL (default claude-sonnet-5-5).
 // Run every Monday by .github/workflows/news.yml. Only Node built-ins are used.
 
 import { readFile, writeFile } from 'node:fs/promises';
@@ -158,7 +158,7 @@ Canadian English, sentence case, no exclamation marks, no marketing tone. Call t
 async function pickWithClaude(candidates) {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) throw new Error('ANTHROPIC_API_KEY is not set (use --no-ai to run without it)');
-  const model = process.env.NEWS_MODEL || 'claude-sonnet-5';
+  const model = process.env.NEWS_MODEL || 'claude-sonnet-5-5';
   const list = candidates
     .map((c, i) => `#${i} | ${c.source} | ${c.date.toISOString().slice(0, 10)}\n${c.title}\n${c.blurb}`)
     .join('\n\n');
