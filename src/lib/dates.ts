@@ -10,6 +10,7 @@ export const weekdayShort = (d: Date) => fmt({ weekday: 'short' }).format(d).rep
 export const monthYear = (d: Date) => fmt({ month: 'long', year: 'numeric' }).format(d);
 export const longDate = (d: Date) => fmt({ weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(d);
 export const shortDate = (d: Date) => fmt({ month: 'short', day: 'numeric', year: 'numeric' }).format(d);
+export const dateTime = (d: Date) => fmt({ month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZoneName: 'short' }).format(d).replace(/\s?([ap])\.?m\.?/i, ' $1m');
 
 export function time(d: Date) {
   return fmt({ hour: 'numeric', minute: '2-digit', hour12: true }).format(d).replace(':00', '').replace(/\s?([ap])\.?m\.?/i, ' $1m');

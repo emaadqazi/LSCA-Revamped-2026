@@ -11,7 +11,7 @@ import ArticleCard from '../components/ArticleCard.astro';
 import NewsItem from '../components/NewsItem.astro';
 import { getEvents, getArticles, getNews, getWeeklyNews, getRosters } from '../lib/content';
 import { teamPhoto } from '../lib/images';
-import { shortDate } from '../lib/dates';
+import { dateTime } from '../lib/dates';
 import { SITE } from '../lib/site';
 
 const { upcoming } = await getEvents();
@@ -101,7 +101,7 @@ const facts = [
             {thisWeek.length > 0 && updated && (
               <p class="mt-4 inline-flex items-center gap-2 rounded-full border border-mist-deep bg-mist px-3 py-1.5 text-sm text-harbour/75">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="6.25" /><path d="M8 4.5V8l2.5 1.5" /></svg>
-                Updated <time datetime={updated.toISOString()}>{shortDate(updated)}</time>, five new stories every Monday
+                Last updated <time datetime={updated.toISOString()}>{dateTime(updated)}</time>
               </p>
             )}
           </div>
