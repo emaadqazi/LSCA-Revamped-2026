@@ -37,7 +37,7 @@
         {
           "name": "Brady Kuzma",
           "role": "Senior Advisor",
-          "program": "4th Year BBA/BSc",
+          "program": "3rd Year BBA/CS",
           "email": "kuzm6431@mylaurier.ca",
           "photo": "2026-27/BradyKuzma.jpg",
           "linkedin": "https://www.linkedin.com/in/brady-kuzma/"
@@ -45,6 +45,7 @@
         {
           "name": "Jullieanne Dao",
           "role": "VP of Internal",
+          "program": "3rd Year BBA",
           "email": "daox1988@mylaurier.ca",
           "photo": "2026-27/JullieanneDao.jpg",
           "linkedin": "https://www.linkedin.com/in/jullieanne-dao-58a15633a/"
@@ -52,12 +53,14 @@
         {
           "name": "Findlay Stone",
           "role": "Director of Internal",
+          "program": "1st Year BBA",
           "email": "ston0673@mylaurier.ca",
           "linkedin": "https://www.linkedin.com/in/findlay-stone-151b96318/"
         },
         {
           "name": "Matthew Nagy",
           "role": "First Year Representative",
+          "program": "1st Year BBA",
           "email": "nagy2488@mylaurier.ca",
           "photo": "2026-27/MatthewNagy.jpg"
         }
@@ -77,6 +80,7 @@
         {
           "name": "Bethany Lassaline",
           "role": "Director of Corporate Relations",
+          "program": "3rd Year BBA/Financial Math",
           "email": "lass9202@mylaurier.ca",
           "photo": "2026-27/BethanyLassaline.jpg",
           "linkedin": "https://www.linkedin.com/in/bethany-lassaline/"
@@ -84,6 +88,7 @@
         {
           "name": "Evangline Yamine",
           "role": "Director of Corporate Relations",
+          "program": "2nd Year BBA",
           "email": "yami9878@mylaurier.ca",
           "photo": "2026-27/EvanglineYamine.jpg",
           "linkedin": "https://www.linkedin.com/in/evangeline-yamine/"
@@ -91,6 +96,7 @@
         {
           "name": "Matteo Volpini",
           "role": "Director of Corporate Relations",
+          "program": "2nd Year BBA",
           "email": "volp2887@mylaurier.ca",
           "photo": "2026-27/MatteoVolpini.jpg",
           "linkedin": "https://www.linkedin.com/in/matteovolpini/"
@@ -103,6 +109,7 @@
         {
           "name": "Quinn Woodlock",
           "role": "VP of Education",
+          "program": "4th Year BBA",
           "email": "wood5348@mylaurier.ca",
           "photo": "2026-27/QuinnWoodlock.jpg",
           "linkedin": "https://www.linkedin.com/in/qwoodlock/"
@@ -110,11 +117,13 @@
         {
           "name": "Devon Sharma",
           "role": "Director of Education",
+          "program": "1st Year BBA",
           "email": "shar0015@mylaurier.ca"
         },
         {
           "name": "Nigel Chay",
           "role": "Director of Education",
+          "program": "2nd Year Economics & Accounting",
           "email": "chay7941@mylaurier.ca",
           "photo": "2026-27/NigelChay.jpg",
           "linkedin": "https://www.linkedin.com/in/nigel-chay/"
@@ -122,6 +131,7 @@
         {
           "name": "Wei Shao",
           "role": "Director of Education",
+          "program": "2nd Year BBA",
           "email": "shao9114@mylaurier.ca",
           "photo": "2026-27/WeiShao.jpg",
           "linkedin": "https://www.linkedin.com/in/wayne-shao-787830382/"
@@ -134,6 +144,7 @@
         {
           "name": "Emma Kllapi",
           "role": "Co-VP of Events",
+          "program": "3rd Year BBA",
           "email": "klla0035@mylaurier.ca",
           "photo": "2026-27/EmmaKllapi.jpg",
           "linkedin": "https://www.linkedin.com/in/emma-kllapi-0407912ab/"
@@ -141,6 +152,7 @@
         {
           "name": "Bryan Wu",
           "role": "Co-VP of Events",
+          "program": "2nd Year BBA",
           "email": "wuxx1243@mylaurier.ca",
           "photo": "2026-27/BryanWu.jpg",
           "linkedin": "https://www.linkedin.com/in/bryanwu07/"
@@ -148,11 +160,13 @@
         {
           "name": "Estelle Sing Fat",
           "role": "Director of Events",
+          "program": "1st Year BBA",
           "email": "sing1304@mylaurier.ca"
         },
         {
           "name": "Ethan Niu",
           "role": "Director of Events",
+          "program": "1st Year BBA",
           "email": "niux5671@mylaurier.ca",
           "photo": "2026-27/EthanNiu.jpg",
           "linkedin": "https://www.linkedin.com/in/ethanniu8/"
@@ -165,6 +179,7 @@
         {
           "name": "Anoushka Mahindru",
           "role": "VP of Marketing",
+          "program": "3rd Year BBA",
           "email": "mahi8412@mylaurier.ca",
           "photo": "2026-27/AnoushkaMahindru.jpg",
           "linkedin": "https://www.linkedin.com/in/anoushka-mahindru-96830b330/"
@@ -172,6 +187,7 @@
         {
           "name": "Abby Soh",
           "role": "Director of Marketing",
+          "program": "2nd Year BBA",
           "email": "sohx0603@mylaurier.ca",
           "photo": "2026-27/AbbySoh.jpg",
           "linkedin": "https://www.linkedin.com/in/abby-soh/"
@@ -179,6 +195,7 @@
         {
           "name": "Katie Lee",
           "role": "Director of Marketing",
+          "program": "1st Year BBA",
           "email": "leex4060@mylaurier.ca",
           "photo": "2026-27/KatieLee.jpg",
           "linkedin": "https://www.linkedin.com/in/katie-lee-3771383a3/"
@@ -191,7 +208,7 @@
         {
           "name": "Emaad Qazi",
           "role": "VP of Software Development",
-          "program": "4th Year BBA/BSc",
+          "program": "3rd Year BBA/BSc",
           "email": "qazi5574@mylaurier.ca",
           "photo": "2026-27/EmaadQazi.png",
           "linkedin": "https://www.linkedin.com/in/emaadqazi/"
@@ -204,6 +221,7 @@
         {
           "name": "Quinn James",
           "role": "VP of Finance",
+          "program": "4th Year Economics",
           "email": "jame2638@mylaurier.ca",
           "photo": "2026-27/QuinnJames.jpg",
           "linkedin": "https://www.linkedin.com/in/quinnjames1/"
