@@ -120,3 +120,12 @@ Brief: find the gaps, then revise the whole site so it has a "wow" factor with s
 - The workflow commits with the Actions token, which doesn't trigger `on: push`, so it dispatches `deploy.yml` explicitly. Needs the `ANTHROPIC_API_KEY` repo secret.
 - `weekly.json` is seeded with a `--no-ai` run from 2026-10-27 (`method: "heuristic"`, publishers' blurbs, no takeaways). The first real run replaces it. The page's footer line says which kind it is.
 - Dev gotcha: after adding a collection or changing its schema while `astro dev` is running, restart dev; the content store does not recover from a failed sync on its own.
+
+---
+
+## Session 4: 2026-11-17
+
+- Added the **Industry Speaker Panel** (Thu 2026-11-19, 7:00–8:50 PM, Dr. Alvin Woods Building Room 2-106) as `src/content/events/2026-11-industry-speaker-panel.md`, with six speakers (KPMG, DHL, Loblaws, Wakefield Canada, Walmart, TransX) and their LinkedIn headshots in `src/assets/speakers/`. "Coming up", the events list, the month calendar and `events.ics` all read from this one file.
+- Speaker LinkedIn URLs were not supplied, so none are linked. The flyers carried no date; the user gave 19 November.
+- Deploy: GitHub Pages serves from `main` via `.github/workflows/deploy.yml` (push to `main`, daily 09:00 UTC cron, manual).
+- Status: previewed locally, awaiting the user's approval before pushing.
